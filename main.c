@@ -54,8 +54,11 @@ void display_text(WINDOW *win, const char *text) {
     wrefresh(win);
 }
 
-void display_cogitator (const char *text) {
-    int offset = 0;
+void display_cogitator (WINDOW *win, const char *text) {
+    wclear(win);
+    wprintw(win, "%s", text);
+    wrefresh(win);
+    /**int offset = 0;
     int paused = 0;
     int text_len = strlen(text);
 
@@ -83,6 +86,58 @@ void display_cogitator (const char *text) {
 
         int ch = getch();
         switch (ch) {
+
+        }
+
+        usleep(DELAY);
+    }
+   **/ endwin();
+}
+
+void display_transition(WINDOW *win, const char *curr_msg, const char *nxt_msg) {
+    int len1 = strlen(curr_msg);
+    int len2 = strlen(nxt_msg);
+    int max_len = len1 > len2 ? len1 : len2;
+
+    char buffer[max_len + 1];
+    strcpy(buffer, curr_msg);
+
+    for (int i = 0; i < max_len; i++) {
+        if (i < len2) {
+            buffer[i] = nxt_msg[i];
+        } else {
+            buffer[i] = ' ';
+        }
+        buffer[i + 1] = '\0';
+
+        display_cogitator(win, buffer);
+        usleep(DELAY);
+    }
+}
+
+void display_inst(WINDOW *win) {
+
+    mvwprintw(win, 0, 0, "Shortcuts: [Arrow Keys] Scroll \t [P]ause, Resume \t [Q]uit");
+}
+
+void await_input(WINDOW *text_win, WINDOW *inst_win, const char *text) {
+    int offset = 0;
+    int paused = 0;
+    int text_len = strlen(text);
+
+    display_inst(inst_win);
+
+    while (1) {
+        if (!paused) {
+            wclear(text_win);
+            for (int i = offset; i < text_len; i++) {
+                wprintw(text_win, "%c", text[i]);
+            }
+            wrefresh(text_win);
+        }
+        int ch = getch();
+
+        switch (ch) {
             case KEY_UP:
                 if (offset > 0) offset--;
                 break;
@@ -99,29 +154,6 @@ void display_cogitator (const char *text) {
                 endwin();
                 return;
         }
-
-        usleep(DELAY);
-    }
-    endwin();
-}
-
-void display_transition(const char *curr_msg, const char *nxt_msg) {
-    int len1 = strlen(curr_msg);
-    int len2 = strlen(nxt_msg);
-    int max_len = len1 > len2 ? len1 : len2;
-
-    char buffer[max_len + 1];
-    strcpy(buffer, curr_msg);
-
-    for (int i = 0; i < max_len; i++) {
-        if (i < len2) {
-            buffer[i] = nxt_msg[i];
-        } else {
-            buffer[i] = ' ';
-        }
-        buffer[i + 1] = '\0';
-        display_cogitator(buffer);
-        usleep(DELAY);
     }
 }
 
