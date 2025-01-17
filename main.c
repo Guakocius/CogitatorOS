@@ -3,24 +3,49 @@
 #include <string.h>
 #include <unistd.h>
 
-#define DELAY 100000
+#define DELAY 50000
 
-void display_binary(WINDOW *win, const char *text, int offset) {
+void display_binary(WINDOW *win, const char *text, const char *status) {
     //char b_text[256] = {0};
     //char b_status[32] = {0};
 
-    int len = strlen(text);
+    int win_width, y, x;
+    getmaxyx(win, y, win_width);
+    getyx(win, y, x);
+
     wclear(win);
 
-    for (int i = offset; i < len; i++) {
+    char bin_stat[64] = {0};
+
+    for (size_t i = 0; i < strlen(status); i++) {
+        char temp[9];
 
         for (int j = 7; j >= 0; j--) {
-            wprintw(win, "%c", (text[i] & (1 << j)) ? '1' : '0');
+            temp[7 - j] = (status[i] & (1 << j)) ? '1' : '0';
         }
-        wprintw(win, " ");
+        temp[8] = '\0';
+        strcat(bin_stat, temp);
+        strcat(bin_stat, " ");
     }
 
+    mvwprintw(win, y, 1, "%s", text);
+    //wrefresh(win);
+
+    if (strcmp(status, "OK") == 0) {
+        wattron(win, COLOR_PAIR(1));
+        wrefresh(win);
+    } else if (strcmp(status, "FAIL") == 0) {
+        wattron(win, COLOR_PAIR(2));
+        //wrefresh(win);
+    }
+
+    mvwprintw(win, y, win_width - (int)strlen(bin_stat) - 2, "%s", bin_stat);
+
+    wattroff(win, COLOR_PAIR(1));
+    wattroff(win, COLOR_PAIR(2));
+
     wrefresh(win);
+    usleep(DELAY);
 }
 
 void display_text(WINDOW *win, const char *text) {
@@ -29,16 +54,10 @@ void display_text(WINDOW *win, const char *text) {
     wrefresh(win);
 }
 
-void display_cogitator (const char *text, int ) {
+void display_cogitator (const char *text) {
     int offset = 0;
     int paused = 0;
     int text_len = strlen(text);
-
-    initscr();
-    cbreak();
-    noecho();
-    keypad(stdscr, TRUE);
-    curs_set(0);
 
     int height, width;
     getmaxyx(stdscr, height, width);
@@ -55,7 +74,7 @@ void display_cogitator (const char *text, int ) {
             for (int i = offset; i < text_len; i++) {
                 wprintw(win, "%c", text[i]);
             }
-            display_binary(win, text, offset);
+            display_binary(win, text, "OK");
             wrefresh(win);
             offset++;
             if (offset >= text_len) offset = 0;
@@ -107,12 +126,50 @@ void display_transition(const char *curr_msg, const char *nxt_msg) {
 }
 
 int main() {
+
+    initscr();
+    cbreak();
+    noecho();
+    keypad(stdscr, TRUE);
+    curs_set(0);
+
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);
+    init_pair(2, COLOR_RED, COLOR_BLACK);
+
+    WINDOW *win = newwin(15, 60, 5, 10);
+
+    // display messages
+    const char *desc[] = {
+        "Initiating cogitator core protocols",
+        "Loading machine spirit modules",
+        "Configuring data sanctum",
+        "Verifying purity seals",
+        "Establishing noospheric uplink",
+        "Finalizing cogitation protocols"
+    };
+    const char *status[] = {
+        "OK", "OK", "OK", "FAIL", "OK", "OK"
+    };
     const char *welcome_msg = "COGITATOR AWAKES: PLEASE WAIT...";
     const char *online_text = "COGITATOR ONLINE: MACHINE SPIRIT ACTIVE...";
+
+    size_t line_count = sizeof(desc) / sizeof(desc[0]);
+
+    for (size_t i = 0; i < line_count; i++) {
+        display_text(win, desc[i]);
+        display_binary(win, desc[i], status[i]);
+        usleep(DELAY);
+    }
+
+
     display_cogitator(welcome_msg);
     refresh();
     usleep(DELAY * 10);
     display_transition(welcome_msg, online_text);
     refresh();
+
+    getch();
+    delwin(win);
+    endwin();
     return 0;
 }
