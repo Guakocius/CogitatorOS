@@ -54,7 +54,7 @@ void display_text(WINDOW *win, const char *text) {
     wrefresh(win);
 }
 
-void display_cogitator (WINDOW *win, const char *text) {
+void display_cogitator(WINDOW *win, const char *text) {
     wclear(win);
     wprintw(win, "%s", text);
     wrefresh(win);
@@ -194,10 +194,10 @@ int main() {
     }
 
 
-    display_cogitator(welcome_msg);
+    display_cogitator(win, welcome_msg);
     refresh();
     usleep(DELAY * 10);
-    display_transition(welcome_msg, online_text);
+    display_transition(win, welcome_msg, online_text);
     refresh();
 
     getch();
