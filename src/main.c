@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "../include/ps1.h"
+#include "../kernel/include/ps1.h"
 
 #define DELAY 50000
 
