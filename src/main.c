@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "../include/ps1.h"
 
 #define DELAY 50000
 
@@ -12,7 +13,6 @@ void display_binary(WINDOW *win, const char *text, const char *status) {
     int win_width, y, x;
     getmaxyx(win, y, win_width);
     getyx(win, y, x);
-
     wclear(win);
 
     char bin_stat[64] = {0};
@@ -147,10 +147,10 @@ void await_input(WINDOW *text_win, WINDOW *inst_win, const char *text) {
             case ' ':
                 paused = !paused;
                 break;
-            case 'r':case'R':
+            case 'r' : case'R':
                 offset = 0;
                 break;
-            case 'q':case'Q':
+            case 'q' : case'Q':
                 endwin();
                 return;
         }
