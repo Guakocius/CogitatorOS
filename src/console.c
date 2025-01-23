@@ -6,7 +6,6 @@ void console_print(const char *str) {
 }
 
 void console_init() {
-    // TODO: Implement console_init
 
     initscr();
     cbreak();
