@@ -1,8 +1,8 @@
 CC = gcc
 CFLAGS = -lncurses -I./kernel/include
-SOURCES = ./src/main.c ./src/ps1.c
+SOURCES = $(wildcard ./src/*.c)
 #OBJECTS = $(SOURCES:.c=.o)
-EXEC = bin/CogitatorOS
+EXEC = ./bin/CogitatorOS
 
 all: $(EXEC)
 
@@ -10,7 +10,7 @@ $(EXEC): #$(OBJECTS)
 	$(CC) -o $(EXEC) $(SOURCES) $(CFLAGS)
 
 .c.o:
-	$(CC) -o $(CFLAGS) $<
+	$(CC) -o -o $@ $< $(CFLAGS)
 
 clean:
 	rm -f $(OBJECTS) $(EXEC)

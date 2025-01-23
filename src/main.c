@@ -1,13 +1,17 @@
 #include "../kernel/include/ps1.h"
-#include "display.c"
-#include "input.c"
-#include "status.c"
-#include "messages.c"
+#include "../kernel/include/display.h"
+#include "../kernel/include/input.h"
+#include "../kernel/include/status.h"
+#include "../kernel/include/messages.h"
+#include "../kernel/include/console.h"
+#include "../kernel/include/disk.h"
 
 #include <ncurses.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+#define DELAY 50000
 
 void setup_colors() {
     start_color();
@@ -17,23 +21,25 @@ void setup_colors() {
 
 int main() {
 
-    init_pair(1, COLOR_GREEN, COLOR_BLACK);
-    init_pair(2, COLOR_RED, COLOR_BLACK);
+    initscr();
+    noecho();
 
     WINDOW *win = newwin(15, 60, 5, 10);
-
-    for (size_t i = 0; i < status_count; i++) {
-        display_text(win, desc[i]);
-        display_binary(win, desc[i], status[i]);
-        usleep(DELAY);
-    }
-
+    setup_colors();
     display_cogitator(win, welcome_msg);
     refresh();
     usleep(DELAY * 10);
     display_transition(win, welcome_msg, online_msg);
     refresh();
 
+    wclear(win);
+    display_inst(win);
+    wrefresh(win);
+
+    for (int i = 0; i < status_count; i++) {
+        display_status(win, &statuses[i]);
+        usleep(DELAY);
+    }
     getch();
     delwin(win);
     endwin();

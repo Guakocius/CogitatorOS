@@ -71,6 +71,16 @@ void display_transition(WINDOW *win, const char *curr_msg, const char *nxt_msg) 
     }
 }
 
+void display_cogitator(WINDOW *win, const char *text) {
+    int win_width, y, x;
+    getmaxyx(win, y, win_width);
+    getyx(win, y, x);
+    wclear(win);
+
+    mvwprintw(win, y, (win_width - strlen(text)) / 2, "%s", text);
+    wrefresh(win);
+}
+
 void display_inst(WINDOW *win) {
 
     mvwprintw(win, 0, 0, "Shortcuts: [Arrow Keys] Scroll \t [P]ause, Resume \t [Q]uit");
