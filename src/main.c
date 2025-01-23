@@ -9,6 +9,12 @@
 #include <string.h>
 #include <unistd.h>
 
+void setup_colors() {
+    start_color();
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);
+    init_pair(2, COLOR_RED, COLOR_BLACK);
+}
+
 int main() {
 
     init_pair(1, COLOR_GREEN, COLOR_BLACK);
@@ -16,15 +22,11 @@ int main() {
 
     WINDOW *win = newwin(15, 60, 5, 10);
 
-
-    size_t line_count = sizeof(desc) / sizeof(desc[0]);
-
-    for (size_t i = 0; i < line_count; i++) {
+    for (size_t i = 0; i < status_count; i++) {
         display_text(win, desc[i]);
         display_binary(win, desc[i], status[i]);
         usleep(DELAY);
     }
-
 
     display_cogitator(win, welcome_msg);
     refresh();

@@ -1,8 +1,8 @@
 CC = gcc
-CFLAGS = -lncurses -I../include
-SOURCES = main.c ps1.c
+CFLAGS = -lncurses -I./kernel/include
+SOURCES = ./src/main.c ./src/ps1.c
 #OBJECTS = $(SOURCES:.c=.o)
-EXEC = ../bin/CogitatorOS
+EXEC = bin/CogitatorOS
 
 all: $(EXEC)
 
