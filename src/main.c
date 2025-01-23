@@ -159,11 +159,7 @@ void await_input(WINDOW *text_win, WINDOW *inst_win, const char *text) {
 
 int main() {
 
-    initscr();
-    cbreak();
-    noecho();
-    keypad(stdscr, TRUE);
-    curs_set(0);
+    
 
     init_pair(1, COLOR_GREEN, COLOR_BLACK);
     init_pair(2, COLOR_RED, COLOR_BLACK);
