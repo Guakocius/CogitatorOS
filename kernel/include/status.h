@@ -3,7 +3,7 @@
 
 typedef struct {
     const char *desc;
-    int code;
+    int (*check_fn)();
 } Status;
 
 extern Status statuses[];

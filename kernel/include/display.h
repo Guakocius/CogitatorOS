@@ -4,6 +4,7 @@
 #include <ncurses.h>
 #include "status.h"
 
+void to_binary(char *output, const char *input);
 void display_binary(WINDOW *win, const char *text, const char *status);
 void display_text(WINDOW *win, const char *text);
 void display_cogitator(WINDOW *win, const char *text);

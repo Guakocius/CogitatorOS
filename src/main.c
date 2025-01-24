@@ -32,14 +32,17 @@ int main() {
     display_transition(win, welcome_msg, online_msg);
     refresh();
 
+    for (int i = 0; i < status_count; i++) {
+        wclear(win);
+        display_status(win, &statuses[i]);
+        wrefresh(win);
+        usleep(DELAY);
+    }
+
     wclear(win);
     display_inst(win);
     wrefresh(win);
 
-    for (int i = 0; i < status_count; i++) {
-        display_status(win, &statuses[i]);
-        usleep(DELAY);
-    }
     getch();
     delwin(win);
     endwin();

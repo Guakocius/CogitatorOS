@@ -4,35 +4,38 @@
 
 #define DELAY 50000
 
-void display_binary(WINDOW *win, const char *text, const char *status) {
+void to_binary(char *output, const char *input) {
+    while (*input) {
+        for (int i = 7; i >= 0; i--) {
+            *output++ = (*input & (1 << i)) ? '1' : '0';
+        }
+        *output++ = ' ';
+        input++;
+    }
+    *output = '\0';
+}
 
+void display_binary(WINDOW *win, const char *text, const char *status) {
     int win_width, y, x;
     getmaxyx(win, y, win_width);
     getyx(win, y, x);
     wclear(win);
 
-    char bin_stat[64] = {0};
+    char bin_text[512] = {0}; // Adjust size as needed
+    char bin_stat[512] = {0}; // Adjust size as needed
 
-    for (size_t i = 0; i < strlen(status); i++) {
-        char temp[9];
+    to_binary(bin_text, text);
+    to_binary(bin_stat, status);
 
-        for (int j = 7; j >= 0; j--) {
-            temp[7 - j] = (status[i] & (1 << j)) ? '1' : '0';
-        }
-        temp[8] = '\0';
-        strcat(bin_stat, temp);
-        strcat(bin_stat, " ");
-    }
-
-    mvwprintw(win, y, 1, "%s", text);
-    //wrefresh(win);
+    mvwprintw(win, y, 1, "%s", bin_text);
 
     if (strcmp(status, "OK") == 0) {
         wattron(win, COLOR_PAIR(1));
         wrefresh(win);
-    } else if (strcmp(status, "FAIL") == 0) {
+    }
+    else if (strcmp(status, "FAIL") == 0) {
         wattron(win, COLOR_PAIR(2));
-        //wrefresh(win);
+        wrefresh(win);
     }
 
     mvwprintw(win, y, win_width - (int)strlen(bin_stat) - 2, "%s", bin_stat);
@@ -61,7 +64,8 @@ void display_transition(WINDOW *win, const char *curr_msg, const char *nxt_msg) 
     for (int i = 0; i < max_len; i++) {
         if (i < len2) {
             buffer[i] = nxt_msg[i];
-        } else {
+        }
+        else {
             buffer[i] = ' ';
         }
         buffer[i + 1] = '\0';
@@ -82,6 +86,5 @@ void display_cogitator(WINDOW *win, const char *text) {
 }
 
 void display_inst(WINDOW *win) {
-
     mvwprintw(win, 0, 0, "Shortcuts: [Arrow Keys] Scroll \t [P]ause, Resume \t [Q]uit");
 }
