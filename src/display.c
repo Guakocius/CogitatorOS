@@ -19,7 +19,7 @@ void display_binary(WINDOW *win, const char *text, const char *status) {
     int win_width, y, x;
     getmaxyx(win, y, win_width);
     getyx(win, y, x);
-    wclear(win);
+    //wclear(win);
 
     char bin_text[512] = {0}; // Adjust size as needed
     char bin_stat[512] = {0}; // Adjust size as needed

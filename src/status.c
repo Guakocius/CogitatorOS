@@ -23,7 +23,7 @@ void init_status() {
         statuses[i].check_fn = statuses[i].check_fn;
     }
 }
-// TODO: Status description is not displayed, only status code
+
 void display_status(WINDOW *win, Status *status) {
     int width;
     int height;
@@ -41,12 +41,12 @@ void display_status(WINDOW *win, Status *status) {
     if (status->check_fn() == 0) {
         wattron(win, COLOR_PAIR(1));
         display_binary(win, bin_status, "OK");
-        mvwprintw(win, 0, width - 40, "%s", bin_status);
+        mvwprintw(win, 1, 0, "%s", bin_status);
         wattroff(win, COLOR_PAIR(1));
     } else {
         wattron(win, COLOR_PAIR(2));
         display_binary(win, bin_status, "FAIL");
-        mvwprintw(win, 0, width - 40, "%s", bin_status);
+        mvwprintw(win, 1, 0, "%s", bin_status);
         wattroff(win, COLOR_PAIR(2));
     }
     wrefresh(win);
