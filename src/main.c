@@ -28,6 +28,7 @@ int main() {
     WINDOW *win = newwin(15, 60, 5, 10);
     setup_colors();
 
+    State current_state = WELCOME;
     const char *current_msg = "";
     const char *next_msg = welcome_msg;
 
@@ -38,27 +39,32 @@ int main() {
 
         current_msg = next_msg;
 
-        if (strcmp(current_msg, welcome_msg) == 0) {
-            next_msg = online_msg;
-        } else if (current_msg == online_msg) {
-            next_msg = desc_init;
-        } else if (strcmp(current_msg, desc_init) == 0) {
-            for (int i = 0; i < status_count; i++) {
+        switch (current_state) {
+            case WELCOME:
+                next_msg = online_msg;
+                current_state = ONLINE;
+                break;
+            case ONLINE:
+                next_msg = desc_init;
+                current_state = DESC_INIT;
+                break;
+            case DESC_INIT:
+                for (int i = 0; i <  status_count; i++) {
+                    wclear(win);
+                    display_status(win, &statuses[i]);
+                    usleep(DELAY);
+                }
+                next_msg = status_done;
+                current_state = STATUS_DONE;
+                break;
+            case STATUS_DONE:
                 wclear(win);
-                display_status(win, &statuses[i]);
-                usleep(DELAY);
-            }
-            next_msg = status_done;
-        } else if (strcmp(current_msg, status_done) == 0) {
-            wclear(win);
-            display_inst(win);
-            wrefresh(win);
-            break;
+                display_inst(win);
+                wrefresh(win);
+                getch();
+                delwin(win);
+                endwin();
+                return 0;
         }
     }
-
-    getch();
-    delwin(win);
-    endwin();
-    return 0;
 }
