@@ -15,7 +15,7 @@ hlt ; Halt the system
 msg db "Loading Bootloader Stage 2...", 0 ; Message to print
 print_string: ; Function to print a string
     ; Print characters until we reach the null-terminator
-    mov ahm 0x0E ; BIOS teletype function
+    mov ah, 0x0E ; BIOS teletype function
     .loop:
         lodsb ; Load the next byte from SI into AL
         cmp al, 0 ; Check if the byte is null
