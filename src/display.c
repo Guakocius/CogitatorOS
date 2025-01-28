@@ -1,6 +1,7 @@
 #include "../kernel/include/display.h"
 #include <string.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #define DELAY 50000
 
@@ -58,7 +59,11 @@ void display_transition(WINDOW *win, const char *curr_msg, const char *nxt_msg) 
     int len2 = strlen(nxt_msg);
     int max_len = len1 > len2 ? len1 : len2;
 
-    char buffer[max_len + 1];
+    char *buffer = (char *)malloc(max_len + 1);
+    if (buffer == NULL) {
+        // Handle memory allocation failure
+        return;
+    }
     strcpy(buffer, curr_msg);
 
     for (int i = 0; i < max_len; i++) {
@@ -73,6 +78,8 @@ void display_transition(WINDOW *win, const char *curr_msg, const char *nxt_msg) 
         display_cogitator(win, buffer);
         usleep(DELAY);
     }
+
+    free(buffer);
 }
 
 void display_cogitator(WINDOW *win, const char *text) {
