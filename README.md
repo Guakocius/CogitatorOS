@@ -1,5 +1,5 @@
 
-# CogitatorOS - The Only Operating System You Need
+# CogitatorOS - The Only Operating System You'll Ever Need
 
 <!-- TODO: Add more features for more immersive interaction -->
 
@@ -21,16 +21,16 @@ CogitatorOS is an immersive, command-line-based operating system inspired by the
 
 2. Install dependencies (ensure `ncurses` is available on your system):
    - For **Debian/Ubuntu**:
-     sudo apt-get install libncurses5-dev
+     sudo apt-get install libncurses5-dev gcc-multilib libc6-dev-i386
 
    - For **Arch Linux**:
-     sudo pacman -S ncurses
+     sudo pacman -S ncurses gcc-multilib
 
-3. Compile the program:
-   gcc -o main main.c -lncurses
+3. Build the project:
+   make
 
 4. Run CogitatorOS:
-   ./main
+   qemu-system-i386 -drive format=raw,file=./boot/img/CogitatorOS.img
 
 ```
 
