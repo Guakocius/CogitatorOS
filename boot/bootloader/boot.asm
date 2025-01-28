@@ -1,5 +1,5 @@
-; Bootloader Stage 1: Booting Up
-org 0x7c00 ; BIOS loads the boot sector into memory location 0x7c00
+org 0x7C00 ; BIOS loads the boot sector into memory location 0x7c00
+
 mov ax, 0x7C0 ; Set up the stack
 mov ss, ax ; Stack starts at 0x7C0:0x0000
 mov sp, 0x0200 ; Stack starts at 0x7C00:0x0200

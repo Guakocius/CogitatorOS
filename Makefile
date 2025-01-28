@@ -1,9 +1,9 @@
 CC = gcc
 ASM = nasm
 CFLAGS = -lncurses -I./kernel/include
-#LDFLAGS = -lncurses
 SOURCES = $(wildcard ./src/*.c)
 ASM_SOURCES = $(wildcard ./boot/bios/*.asm ./boot/bootloader/*.asm)
+ASM_OBJECTS = $(ASM_SOURCES:.asm=.o)
 OBJECTS = $(SOURCES:.c=.o)
 EXEC = ./bin/CogitatorOS
 IMG = ./boot/img/CogitatorOS.img
@@ -26,19 +26,14 @@ install_deps:
 
 
 $(EXEC): $(OBJECTS)
-#	$(CC) -o $(EXEC) $(SOURCES) $(CFLAGS)
-#	$(CC) $(OBJECTS) -o $(EXEC) $(LDFLAGS)
-#	$(ASM) -f bin -o ./bin/bios.bin $(ASM_SOURCES)
 	$(CC) -o $(EXEC) $(OBJECTS) $(CFLAGS)
-#	$(ASM) -f bin -o ./bin/bios.bin $(ASM_SOURCES)
 
-$(IMG):
+$(IMG): boot.bin bios.bin graphics.bin
 	@echo "Creating image..."
 	@dd if=/dev/zero of=$(IMG) bs=512 count=2880
 	@dd if=./bin/boot.bin of=$(IMG) bs=512 count=1 conv=notrunc
 	@dd if=./bin/bios.bin of=$(IMG) bs=512 seek=1 conv=notrunc
 	@dd if=./bin/graphics.bin of=$(IMG) bs=512 seek=2 conv=notrunc
-	@dd if=./bin/CogitatorOS of=$(IMG) bs=512 seek=3 conv=notrunc
 
 boot.bin: ./boot/bootloader/boot.asm
 	$(ASM) -f bin -o ./bin/boot.bin ./boot/bootloader/boot.asm

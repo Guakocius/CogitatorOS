@@ -14,13 +14,13 @@ start:
     sti ; Enable interrupts
 
     ; Initialize graphics mode
-    call init_graphics
+    ;call init_graphics
 
     ; Draw a pixel at coordinates (100, 100) with color 4 (red)
     mov cx, 100 ; X-coordinate
     mov dx, 100 ; Y-coordinate
     mov al, 4 ; Color (red)
-    call put_px
+    ;call put_px
 
     ; Print a message
     mov si, msg
@@ -37,7 +37,7 @@ enter_bios:
     ; Enter BIOS
     mov si, bios_msg
     call print_string
-
+    
     call bios_menu
     ;jmp $
 
@@ -49,7 +49,8 @@ bios_menu:
     call wait_for_key
 
     ; Handle the key press
-    jmp bios_menu
+    ret
+    ;jmp bios_menu
 
 print_string:
     lodsb ; Load the next byte from SI into AL
