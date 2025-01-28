@@ -66,3 +66,17 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Add more interactive features, like system diagnostics and machine prayers.
 - Implement a graphical user interface (GUI) version, combining terminal and graphical elements for full immersion.
 - Enhance animations and sound effects for a truly cogitator-like experience.
+
+By following these updated instructions, users should be able to build and run the CogitatorOS project as it currently stands.
+
+### Explanation of Changes
+
+1. **Installation Instructions**:
+   - Updated to include the installation of dependencies (`libncurses5-dev`, `gcc-multilib`, `libc6-dev-i386`).
+   - Added instructions to build the project using `make`.
+
+2. **Running the Project**:
+   - Updated to include instructions for running the project using `qemu`.
+
+3. **General Updates**:
+   - Ensured the README reflects the current state of the project, including the use of the `Makefile`.
