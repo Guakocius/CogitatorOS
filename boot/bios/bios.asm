@@ -2,10 +2,13 @@
 extern init_graphics
 extern put_px
 
-org 0x7C00 ; BIOS loads the boot sector into memory location 0x7c00
+;org 0x7C00 ; BIOS loads the boot sector into memory location 0x7c00
 ; TODO: Enter BIOS should call bios_menu 
 
-start:
+section .text
+global _start
+
+_start:
     ; Set up the stack
     cli
     xor ax,  ax ; Set AX to 0

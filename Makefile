@@ -38,11 +38,14 @@ $(IMG): boot.bin bios.bin graphics.bin
 boot.bin: ./boot/bootloader/boot.asm
 	$(ASM) -f bin -o ./bin/boot.bin ./boot/bootloader/boot.asm
 
-bios.bin: ./boot/bios/bios.asm
-	$(ASM) -f bin -o ./bin/bios.bin ./boot/bios/bios.asm
+bios.bin: ./boot/bios/bios.o
+	ld -m elf_i386 -Ttext 0x8000 --oformat binary -o ./bin/bios.bin ./boot/bios/bios.o
 
-graphics.bin: ./boot/bios/graphics.asm
-	$(ASM) -f bin -o ./bin/graphics.bin ./boot/bios/graphics.asm
+graphics.bin: ./boot/bios/graphics.o
+	ld -m elf_i386 -Ttext 0x9000 --oformat binary -o ./bin/graphics.bin ./boot/bios/graphics.o
+
+./boot/bios/%.o: ./boot/bios/%.asm
+	$(ASM) -f elf -o $@ $<
 
 %.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS)
