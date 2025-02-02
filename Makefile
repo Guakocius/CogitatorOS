@@ -51,4 +51,4 @@ graphics.bin: ./boot/bios/graphics.o
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 clean:
-	rm -f ./bin/boot.bin ./bin/bios.bin ./bin/graphics.bin $(OBJECTS)
+	rm -f ./bin/boot.bin ./bin/bios.bin ./bin/graphics.bin $(OBJECTS) $(ASM_OBJECTS)
