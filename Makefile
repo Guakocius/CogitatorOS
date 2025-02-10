@@ -1,6 +1,7 @@
 CC = gcc
 ASM = nasm
-CFLAGS = -lncurses -I./kernel/include
+CFLAGS = -fPIE -lncurses -I./kernel/include
+LDFLAGS = -pie
 SOURCES = $(wildcard ./src/*.c)
 ASM_SOURCES = $(wildcard ./boot/bios/*.asm ./boot/bootloader/*.asm)
 ASM_OBJECTS = $(ASM_SOURCES:.asm=.o)
@@ -24,9 +25,8 @@ install_deps:
 		sudo apt update && sudo apt upgrade -y libc6-dev-i386; \
 	fi
 
-
-$(EXEC): $(OBJECTS)
-	$(CC) -o $(EXEC) $(OBJECTS) $(CFLAGS)
+$(EXEC): $(OBJECTS) $(ASM_OBJECTS)
+	$(CC) -o $(EXEC) $(OBJECTS) $(ASM_OBJECTS) $(CFLAGS) $(LDFLAGS)
 
 $(IMG): boot.bin bios.bin graphics.bin
 	@echo "Creating image..."
@@ -38,20 +38,20 @@ $(IMG): boot.bin bios.bin graphics.bin
 boot.bin: ./boot/bootloader/boot.asm
 	$(ASM) -f bin -o ./bin/boot.bin ./boot/bootloader/boot.asm
 
-bios.bin: ./boot/bios/bios.o ./boot/bios/graphics_asm.o
-	ld -m elf_i386 -Ttext 0x8000 --oformat binary -o ./bin/bios.bin ./boot/bios/bios.o ./boot/bios/graphics_asm.o
+bios.bin: ./boot/bios/bios.o ./boot/bios/graphics.o
+	ld -m elf_x86_64 -Ttext 0x8000 --oformat binary -o ./bin/bios.bin ./boot/bios/bios.o ./boot/bios/graphics.o
 
-graphics.bin: ./boot/bios/graphics_asm.o ./boot/bios/graphics_asm.o
-	ld -m elf_i386 -Ttext 0x9000 --oformat binary -o ./bin/graphics.bin ./boot/bios/graphics_asm.o ./boot/bios/graphics_asm.o
+graphics.bin: ./boot/bios/graphics.o
+	ld -m elf_x86_64 -Ttext 0x9000 --oformat binary -o ./bin/graphics.bin ./boot/bios/graphics.o
 
 ./boot/bios/%.o: ./boot/bios/%.asm
-	$(ASM) -f elf -o $@ $<
+	$(ASM) -f elf64 -o $@ $<
 
-./boot/bios/%.o: ./boot/bios/graphics.asm
-	$(ASM) -f elf -o ./boot/bios/graphics_asm.o ./boot/bios/graphics.asm
+./boot/bootloader/%.o: ./boot/bootloader/%.asm
+	$(ASM) -f elf64 -o $@ $< 
 
 %.o: %.c
-	$(CC) -m32 -fno-pic -c -o $@ $< $(CFLAGS)
+	$(CC) -fPIE -c -o $@ $< $(CFLAGS)
 
 clean:
 	rm -f ./bin/boot.bin ./bin/bios.bin ./bin/graphics.bin $(OBJECTS) $(ASM_OBJECTS)

@@ -4,7 +4,7 @@ global draw_px
 
 ; Set video mode to 320x200 256-color mode (mode 0x13)
 set_video_mode:
-    mov ax, 0x0013 ; Set video mode to 320x200 256-color mode
+    mov rax, 0x0013 ; Set video mode to 320x200 256-color mode
     int 0x10 ; Call the BIOS
     ret
 

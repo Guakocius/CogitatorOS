@@ -1,15 +1,15 @@
 org 0x7C00 ; BIOS loads the boot sector into memory location 0x7c00
 
-mov ax, 0x7C0 ; Set up the stack
-mov ss, ax ; Stack starts at 0x7C0:0x0000
+mov rax, 0x7C0 ; Set up the stack
+mov ss, rax ; Stack starts at 0x7C0:0x0000
 mov sp, 0x0200 ; Stack starts at 0x7C00:0x0200
 
 ; Load Bootloader Stage 2: Initializing the system
-mov si, msg ; Print message
+mov si, boot_msg ; Print message
 call print_string ; Call print_string function
 
 ; Load BIOS code from disk
-mov bx, 0x8000 ; Load BIOS code to 0x8000
+mov rbx, 0x8000 ; Load BIOS code to 0x8000
 mov dh, 0x01 ; Load 1 sector
 mov dl, 0x80 ; Load from disk 0
 mov ch, 0x00 ; Cylinder 0
@@ -20,7 +20,7 @@ int 0x13 ; Call BIOS
 jc disk_error ; Jump to disk_error if error
 
 ; Load the graphics mode
-mov bx, 0x9000 ; Load graphics mode to 0x9000
+mov rbx, 0x9000 ; Load graphics mode to 0x9000
 mov dh, 0x01 ; Load 1 sector
 mov dl, 0x80 ; Load from disk 0
 mov ch, 0x00 ; Cylinder 0
@@ -38,7 +38,7 @@ disk_error:
     call print_string ; Call print_string function
     hlt ; Halt the system
 
-msg db "Loading Bootloader...\n", 0 ; Message to print
+boot_msg db "Loading Bootloader...\n", 0 ; Message to print
 disk_error_msg db "Error loading BIOS code from disk\n", 0 ; Error message
 
 print_string: ; Function to print a string
