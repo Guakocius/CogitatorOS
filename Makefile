@@ -38,17 +38,20 @@ $(IMG): boot.bin bios.bin graphics.bin
 boot.bin: ./boot/bootloader/boot.asm
 	$(ASM) -f bin -o ./bin/boot.bin ./boot/bootloader/boot.asm
 
-bios.bin: ./boot/bios/bios.o
-	ld -m elf_i386 -Ttext 0x8000 --oformat binary -o ./bin/bios.bin ./boot/bios/bios.o
+bios.bin: ./boot/bios/bios.o ./boot/bios/graphics_asm.o
+	ld -m elf_i386 -Ttext 0x8000 --oformat binary -o ./bin/bios.bin ./boot/bios/bios.o ./boot/bios/graphics_asm.o
 
-graphics.bin: ./boot/bios/graphics.o
-	ld -m elf_i386 -Ttext 0x9000 --oformat binary -o ./bin/graphics.bin ./boot/bios/graphics.o
+graphics.bin: ./boot/bios/graphics_asm.o ./boot/bios/graphics_asm.o
+	ld -m elf_i386 -Ttext 0x9000 --oformat binary -o ./bin/graphics.bin ./boot/bios/graphics_asm.o ./boot/bios/graphics_asm.o
 
 ./boot/bios/%.o: ./boot/bios/%.asm
 	$(ASM) -f elf -o $@ $<
 
+./boot/bios/%.o: ./boot/bios/graphics.asm
+	$(ASM) -f elf -o ./boot/bios/graphics_asm.o ./boot/bios/graphics.asm
+
 %.o: %.c
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -m32 -fno-pic -c -o $@ $< $(CFLAGS)
 
 clean:
 	rm -f ./bin/boot.bin ./bin/bios.bin ./bin/graphics.bin $(OBJECTS) $(ASM_OBJECTS)

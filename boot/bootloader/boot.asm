@@ -19,6 +19,17 @@ int 0x13 ; Call BIOS
 
 jc disk_error ; Jump to disk_error if error
 
+; Load the graphics mode
+mov bx, 0x9000 ; Load graphics mode to 0x9000
+mov dh, 0x01 ; Load 1 sector
+mov dl, 0x80 ; Load from disk 0
+mov ch, 0x00 ; Cylinder 0
+mov cl, 0x03 ; Sector 3
+mov ah, 0x02 ; Read disk sectors
+int 0x13 ; Call BIOS
+
+jc disk_error ; Jump to disk_error if error
+
 ; Jump to BIOS code
 jmp 0x8000:0x0000 ; Jump to BIOS code, segment 0x8000, offset 0x0000
 
@@ -27,8 +38,8 @@ disk_error:
     call print_string ; Call print_string function
     hlt ; Halt the system
 
-msg db "Loading Bootloader Stage 2...", 0 ; Message to print
-disk_error_msg db "Error loading BIOS code from disk", 0 ; Error message
+msg db "Loading Bootloader...\n", 0 ; Message to print
+disk_error_msg db "Error loading BIOS code from disk\n", 0 ; Error message
 
 print_string: ; Function to print a string
     ; Print characters until we reach the null-terminator
