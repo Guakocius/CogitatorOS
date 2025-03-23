@@ -1,10 +1,6 @@
 CC = gcc
 ASM = nasm
 CFLAGS = -ffreestanding -fno-pic -mno-red-zone -I./boot/drivers/include -I./boot/bootloader/kernel/include
-LDFLAGS = -pie
-SOURCES = $(wildcard ./src/*.c)
-ASM_SOURCES = $(wildcard ./boot/bios/*.asm ./boot/bootloader/*.asm)
-OBJECTS = $(SOURCES:.c=.o)
 IMG = ./boot/img/CogitatorOS.img
 
 all: install_deps run
@@ -57,14 +53,6 @@ install_deps:
 
 run: ./bin/CogitatorOS.bin
 	qemu-system-i386 -fda $<
-
-#$(IMG): ./bin/mbr ./bin/bios ./bin/graphics
-#	@echo "Creating image..."
-#	@dd if=/dev/zero of=$(IMG) bs=512 count=2880
-#	@dd if=./bin/mbr of=$(IMG) bs=512 count=1 conv=notrunc
-#	@dd if=./bin/bios of=$(IMG) bs=512 seek=1 conv=notrunc
-#	@dd if=./bin/graphics of=$(IMG) bs=512 seek=2 conv=notrunc
-#	@echo "Image created"
 
 %.o: %.c
 	$(CC) -fPIE -c -o $@ $< $(CFLAGS)
