@@ -9,7 +9,16 @@ mov [BOOT_DRIVE], dl ; Save the boot drive number
 mov bp, 0x9000
 mov sp, bp
 
+
+mov ah, 0x0E
+mov al, 'L'
+int 0x10
 call load_kernel
+
+mov ah, 0x0E
+mov al, 'D'
+int 0x10
+
 call switch_to_32bit
 
 jmp $ ; Infinite loop

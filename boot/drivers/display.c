@@ -54,6 +54,14 @@ void print_string(char* str) {
     set_cursor(offset);
 }
 
+void print_nl() {
+    int newOffset = move_offset_to_new_line(get_cursor());
+    if (newOffset >= MAX_ROWS * MAX_COLS * 2) {
+        newOffset = scroll_in(newOffset);
+    }
+    set_cursor(newOffset);
+}
+
 int scroll_in(int offset) {
     memory_copy(
         (char*) (get_offset(0, 1) + VIDEO_ADDRESS),

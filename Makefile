@@ -30,7 +30,7 @@ install_deps:
 		fi; \
 	fi
 
-./bin/kernel.bin: ./boot/bootloader/kernel-entry.o ./boot/drivers/display.o ./boot/bootloader/kernel/util.o ./boot/bootloader/kernel/kernel.o 
+./bin/kernel.bin: ./boot/bootloader/kernel-entry.o ./boot/drivers/ports.o ./boot/drivers/display.o ./boot/bootloader/kernel/util.o ./boot/bootloader/kernel/kernel.o 
 	ld -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary
 
 ./boot/bootloader/kernel-entry.o: ./boot/bootloader/kernel-entry.asm
@@ -45,17 +45,24 @@ install_deps:
 ./boot/drivers/display.o: ./boot/drivers/display.c
 	$(CC) -m32 -ffreestanding -c $< -o $@ $(CFLAGS)
 
+./boot/drivers/ports.o: ./boot/drivers/ports.c
+	$(CC) -m32 -ffreestanding -c $< -o $@ $(CFLAGS)
+
 ./boot/bootloader/kernel/util.o: ./boot/bootloader/kernel/util.c
 	$(CC) -m32 -ffreestanding -c $< -o $@ $(CFLAGS)
 
 ./bin/CogitatorOS.bin: ./bin/mbr.bin ./bin/kernel.bin
 	cat $^ > $@
 
-run: ./bin/CogitatorOS.bin
-	qemu-system-i386 -fda $<
+./boot/img/CogitatorOS.img: ./bin/CogitatorOS.bin
+	mkdir -p ./boot/img
+	cp $< $@
+
+run: ./boot/img/CogitatorOS.img
+	qemu-system-i386 -drive format=raw,file=$<
 
 %.o: %.c
 	$(CC) -fPIE -c -o $@ $< $(CFLAGS)
 
 clean:
-	rm -f ./bin/*.bin ./boot/bootloader/*.o ./boot/bootloader/kernel/*.o ./boot/drivers/*.o
+	rm -f ./bin/*.bin ./boot/bootloader/*.o ./boot/bootloader/kernel/*.o ./boot/drivers/*.o $(IMG)
