@@ -7,6 +7,8 @@ switch_to_32bit:
     mov cr0, eax
     jmp CODE_SEG:init_32_bit
 
+    jmp $
+
 [bits 32]
 init_32_bit:
     mov ax, DATA_SEG

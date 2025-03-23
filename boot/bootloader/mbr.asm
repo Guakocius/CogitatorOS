@@ -10,7 +10,7 @@ mov bp, 0x9000
 mov sp, bp
 
 mov ah, 0x0E
-mov al, 'H'
+mov al, 0x48 ; 'H'
 int 0x10
 call load_kernel
 
@@ -20,34 +20,19 @@ call load_kernel
 
 load_kernel:
     mov ah, 0x0E
-    mov al, 'W'
+    mov al, 0x57 ; 'W'
     int 0x10
+
     mov bx, KERNEL_OFFSET ; bx -> destination
-    mov dh, 2 ; dh -> number of sectors to read
+    mov dh, 0x05 ; dh -> number of sectors to read
     mov dl, [BOOT_DRIVE] ; dl -> disk
-    call clear_screen
+
     call disk_load
+    mov ah, 0x00
+    mov al, 0x12
+    int 0x10
+
     call switch_to_32bit
-
-    jmp $
-
-clear_screen:
-    pusha
-    
-    mov ah, 0x07
-    mov bh, 0x0F
-    mov cx, 0x00
-    mov dx, 0x184F
-    int 0x10
-
-    mov ah, 0x02
-    mov dh, 0x00
-    mov dl, 0x00
-    mov bh, 0x00
-    int 0x10
-
-    popa
-    ret
 
 [bits 32]
 BEGIN_32_BIT:

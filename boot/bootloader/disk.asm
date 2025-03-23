@@ -2,12 +2,13 @@ disk_load:
     pusha
     push dx
 
-    mov ah, 0x02
-    mov al, dh
-    mov cl, 0x02
-
-    mov ch, 0x00
-    mov dh, 0x00
+    mov ah, 0x02 ; Read sectors
+    mov al, dh   ; Number of sectors to read
+    mov cl, 0x02 ; Start at sector 2
+                 ; Sector 1 is the boot sector
+    mov ch, 0x00 ; Cylinder 0
+    mov dh, 0x00 ; Head 0
+    ;mov dl, [BOOT_DRIVE] ; Drive
 
     int 0x13
     jc disk_error
@@ -16,6 +17,7 @@ disk_load:
     cmp al, dh
 
     jne sectors_error
+
     popa
     ret
 
@@ -41,3 +43,4 @@ error_loop:
     int 0x10
 
     jmp $
+    
