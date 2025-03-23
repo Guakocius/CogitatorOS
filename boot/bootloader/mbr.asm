@@ -32,7 +32,7 @@ load_kernel:
     mov al, 0x12
     int 0x10
 
-    call switch_to_32bit
+    ;call switch_to_32bit
 
 [bits 32]
 BEGIN_32_BIT:

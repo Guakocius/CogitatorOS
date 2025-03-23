@@ -1,33 +1,70 @@
+HPC equ 2
+SPT equ 18
 disk_load:
     pusha
-    push dx
+    push ax
+    push eax
+    push ebx
+    push edx
+
+    mov ebx, ecx
+
+    mov edx, 0
+    mov eax, ebx
+    mov ecx, SPT
+    div ecx
+
+    add edx, 1
+    push edx
+
+    mov edx, 0
+    mov ecx, HPC
+    div ecx
+
+    push edx
+
+    mov eax, HPC
+    mov ecx, SPT
+    mul ecx
+
+    mov ecx, eax
+    mov eax, ebx
+    mov edx, 0
+    div ecx
+    push eax
+
+    pop eax
+    mov ch, al ; Cylinder
+    pop eax
+    mov dh, al ; Head
+    pop eax
+    mov cl, al ; Sector
+    pop eax
+    mov dl, al ; Drive
+    
+    pop ebx
+    pop eax
 
     mov ah, 0x02 ; Read sectors
-    mov al, dh   ; Number of sectors to read
-    mov cl, 0x02 ; Start at sector 2
-                 ; Sector 1 is the boot sector
-    mov ch, 0x00 ; Cylinder 0
-    mov dh, 0x00 ; Head 0
-    ;mov dl, [BOOT_DRIVE] ; Drive
 
     int 0x13
     jc disk_error
-
+    
     pop dx
-    cmp al, dh
+    cmp dl, al ; Check if the number of read sectors is equal to the number of sectors to read
+    jne disk_warn
 
-    jne sectors_error
-
+disk_load_done:
     popa
     ret
 
 disk_error:
-    mov ah, '1' ; Error Code
-    jmp error_loop
+    call error_loop
+    jmp disk_load_done
 
-sectors_error:
-    mov ah, '2' ; Error Code
-    jmp error_loop
+disk_warn:
+    call error_loop
+    jmp disk_load_done
 
 error_loop:
     mov dh, ah
@@ -41,6 +78,3 @@ error_loop:
     int 0x10
     mov al, dh ; Print Error Code
     int 0x10
-
-    jmp $
-    
