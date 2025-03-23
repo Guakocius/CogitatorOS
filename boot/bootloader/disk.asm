@@ -20,10 +20,24 @@ disk_load:
     ret
 
 disk_error:
-    jmp disk_loop
+    mov ah, '1' ; Error Code
+    jmp error_loop
 
 sectors_error:
-    jmp disk_loop
+    mov ah, '2' ; Error Code
+    jmp error_loop
 
-disk_loop:
+error_loop:
+    mov dh, ah
+    mov ah, 0x0E
+    mov al, 'E'
+    int 0x10
+    mov al, 'r'
+    int 0x10
+    int 0x10
+    mov al, 0x20 ; Space
+    int 0x10
+    mov al, dh ; Print Error Code
+    int 0x10
+
     jmp $

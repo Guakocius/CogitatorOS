@@ -9,35 +9,49 @@ mov [BOOT_DRIVE], dl ; Save the boot drive number
 mov bp, 0x9000
 mov sp, bp
 
-
 mov ah, 0x0E
-mov al, 'L'
+mov al, 'H'
 int 0x10
 call load_kernel
-
-mov ah, 0x0E
-mov al, 'D'
-int 0x10
-
-call switch_to_32bit
-
-jmp $ ; Infinite loop
 
 %include "./boot/bootloader/disk.asm"
 %include "./boot/bootloader/gdt.asm"
 %include "./boot/bootloader/32-bit-switch.asm"
 
-[bits 16]
 load_kernel:
+    mov ah, 0x0E
+    mov al, 'W'
+    int 0x10
     mov bx, KERNEL_OFFSET ; bx -> destination
     mov dh, 2 ; dh -> number of sectors to read
     mov dl, [BOOT_DRIVE] ; dl -> disk
+    call clear_screen
     call disk_load
+    call switch_to_32bit
+
+    jmp $
+
+clear_screen:
+    pusha
+    
+    mov ah, 0x07
+    mov bh, 0x0F
+    mov cx, 0x00
+    mov dx, 0x184F
+    int 0x10
+
+    mov ah, 0x02
+    mov dh, 0x00
+    mov dl, 0x00
+    mov bh, 0x00
+    int 0x10
+
+    popa
     ret
 
 [bits 32]
 BEGIN_32_BIT:
-    call KERNEL_OFFSET ; Call the kernel
+    jmp KERNEL_OFFSET ; Call the kernel
     jmp $
 
 BOOT_DRIVE db 0

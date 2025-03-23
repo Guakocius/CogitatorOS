@@ -59,7 +59,7 @@ install_deps:
 	cp $< $@
 
 run: ./boot/img/CogitatorOS.img
-	qemu-system-i386 -drive format=raw,file=$<
+#	qemu-system-i386 -drive format=raw,file=$<
 
 %.o: %.c
 	$(CC) -fPIE -c -o $@ $< $(CFLAGS)

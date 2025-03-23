@@ -16,7 +16,7 @@ init_32_bit:
     mov fs, ax
     mov gs, ax
 
-    mov ebp, 0x90000
+    mov ebp, 0x9000
     mov esp, ebp
 
     call BEGIN_32_BIT ; move back to mbr.asm
