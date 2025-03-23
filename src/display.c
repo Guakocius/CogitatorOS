@@ -1,4 +1,4 @@
-#include "../kernel/include/display.h"
+#include "display.h"
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>

@@ -1,6 +1,6 @@
 CC = gcc
 ASM = nasm
-CFLAGS = -ffreestanding -fno-pic -mno-red-zone
+CFLAGS = -ffreestanding -fno-pic -mno-red-zone -I./boot/drivers/include -I./boot/bootloader/kernel/include
 LDFLAGS = -pie
 SOURCES = $(wildcard ./src/*.c)
 ASM_SOURCES = $(wildcard ./boot/bios/*.asm ./boot/bootloader/*.asm)
@@ -34,17 +34,23 @@ install_deps:
 		fi; \
 	fi
 
-./bin/kernel.bin: ./boot/bootloader/kernel-entry.o ./boot/bootloader/kernel.o
+./bin/kernel.bin: ./boot/bootloader/kernel-entry.o ./boot/drivers/display.o ./boot/bootloader/kernel/util.o ./boot/bootloader/kernel/kernel.o 
 	ld -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary
 
 ./boot/bootloader/kernel-entry.o: ./boot/bootloader/kernel-entry.asm
 	$(ASM) $< -f elf -o $@
 
-./boot/bootloader/kernel.o: ./boot/bootloader/kernel.c
+./boot/bootloader/kernel/kernel.o: ./boot/bootloader/kernel/kernel.c
 	$(CC) -m32 -ffreestanding -c $< -o $@ $(CFLAGS)
 
 ./bin/mbr.bin: ./boot/bootloader/mbr.asm
 	$(ASM) $< -f bin -o $@
+
+./boot/drivers/display.o: ./boot/drivers/display.c
+	$(CC) -m32 -ffreestanding -c $< -o $@ $(CFLAGS)
+
+./boot/bootloader/kernel/util.o: ./boot/bootloader/kernel/util.c
+	$(CC) -m32 -ffreestanding -c $< -o $@ $(CFLAGS)
 
 ./bin/CogitatorOS.bin: ./bin/mbr.bin ./bin/kernel.bin
 	cat $^ > $@
@@ -64,4 +70,4 @@ run: ./bin/CogitatorOS.bin
 	$(CC) -fPIE -c -o $@ $< $(CFLAGS)
 
 clean:
-	rm -f ./bin/*.bin ./boot/bootloader/*.o
+	rm -f ./bin/*.bin ./boot/bootloader/*.o ./boot/bootloader/kernel/*.o ./boot/drivers/*.o

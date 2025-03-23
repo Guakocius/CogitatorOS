@@ -1,5 +1,5 @@
-#include "../kernel/include/input.h"
-#include "../kernel/include/display.h"
+#include "input.h"
+#include "display.h"
 
 #include <ncurses.h>
 #include <string.h>

@@ -1,4 +1,4 @@
-#include "../kernel/include/console.h"
+#include "console.h"
 #include <stdio.h>
 
 void console_print(const char *str) {

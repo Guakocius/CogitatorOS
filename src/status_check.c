@@ -1,4 +1,4 @@
-#include "../kernel/include/status_check.h"
+#include "status_check.h"
 #include <unistd.h>
 #include <stdbool.h>
 

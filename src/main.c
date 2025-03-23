@@ -1,11 +1,11 @@
-#include "../kernel/include/ps1.h"
-#include "../kernel/include/display.h"
-#include "../kernel/include/input.h"
-#include "../kernel/include/status.h"
-#include "../kernel/include/messages.h"
-#include "../kernel/include/console.h"
-#include "../kernel/include/disk.h"
-#include "../kernel/include/state.h"
+#include "ps1.h"
+#include "display.h"
+#include "input.h"
+#include "status.h"
+#include "messages.h"
+#include "console.h"
+#include "disk.h"
+#include "state.h"
 
 #include <ncurses.h>
 #include <stdlib.h>

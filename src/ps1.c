@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../kernel/include/ps1.h"
+#include "ps1.h"
 
 // Function to set the custom PS1 prompt
 void set_ps1(const char *ps1) {

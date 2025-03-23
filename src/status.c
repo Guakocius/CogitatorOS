@@ -1,6 +1,6 @@
-#include "../kernel/include/status.h"
-#include "../kernel/include/status_check.h"
-#include "../kernel/include/display.h"
+#include "status.h"
+#include "status_check.h"
+#include "display.h"
 
 
 Status statuses[] = {
