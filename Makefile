@@ -30,8 +30,8 @@ install_deps:
 		fi; \
 	fi
 
-./bin/kernel.bin: ./boot/bootloader/kernel-entry.o ./boot/drivers/ports.o ./boot/drivers/display.o ./boot/bootloader/kernel/util.o ./boot/bootloader/kernel/kernel.o 
-	ld -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary
+./bin/kernel.bin: ./boot/bootloader/kernel-entry.o ./boot/drivers/ports.o ./boot/drivers/display.o ./boot/bootloader/kernel/util.o ./boot/bootloader/kernel/kernel.o
+	ld -m elf_i386 -T linker.ld -o $@ --oformat binary $^
 
 ./boot/bootloader/kernel-entry.o: ./boot/bootloader/kernel-entry.asm
 	$(ASM) $< -f elf -o $@

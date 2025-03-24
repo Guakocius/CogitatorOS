@@ -1,5 +1,6 @@
 HPC equ 2
 SPT equ 18
+
 disk_load:
     pusha
     push ax
@@ -41,7 +42,7 @@ disk_load:
     mov cl, al ; Sector
     pop eax
     mov dl, al ; Drive
-    
+
     pop ebx
     pop eax
 
@@ -49,7 +50,7 @@ disk_load:
 
     int 0x13
     jc disk_error
-    
+
     pop dx
     cmp dl, al ; Check if the number of read sectors is equal to the number of sectors to read
     jne disk_warn

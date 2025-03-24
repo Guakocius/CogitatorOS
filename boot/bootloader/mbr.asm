@@ -5,7 +5,7 @@ KERNEL_OFFSET equ 0x1000
 
 mov [BOOT_DRIVE], dl ; Save the boot drive number
 
-; Setup stack
+    ; Setup stack
 mov bp, 0x9000
 mov sp, bp
 
@@ -13,6 +13,7 @@ mov ah, 0x0E
 mov al, 0x48 ; 'H'
 mov bh, 0x00
 int 0x10
+
 call load_kernel
 
 %include "./boot/bootloader/disk.asm"
