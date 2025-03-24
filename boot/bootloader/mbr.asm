@@ -11,6 +11,7 @@ mov sp, bp
 
 mov ah, 0x0E
 mov al, 0x48 ; 'H'
+mov bh, 0x00
 int 0x10
 call load_kernel
 
@@ -19,7 +20,6 @@ call load_kernel
 %include "./boot/bootloader/32-bit-switch.asm"
 
 load_kernel:
-    mov ah, 0x0E
     mov al, 0x57 ; 'W'
     int 0x10
 
@@ -28,9 +28,6 @@ load_kernel:
     mov dl, [BOOT_DRIVE] ; dl -> disk
 
     call disk_load
-    mov ah, 0x00
-    mov al, 0x12
-    int 0x10
 
     ;call switch_to_32bit
 
