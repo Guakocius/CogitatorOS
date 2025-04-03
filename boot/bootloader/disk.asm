@@ -1,81 +1,70 @@
-HPC equ 2
-SPT equ 18
-
 disk_load:
+
     pusha
-    push ax
-    push eax
-    push ebx
-    push edx
+    push dx
 
-    mov ebx, ecx
+    mov ah, 0x02 ; Read Sectors
+    mov al, dh ; Number of Sectors to Read (0x02 .. 0x80)
+    mov cl, 0x02 ; sector (0x01 .. 0x11)
 
-    mov edx, 0
-    mov eax, ebx
-    mov ecx, SPT
-    div ecx
-
-    add edx, 1
-    push edx
-
-    mov edx, 0
-    mov ecx, HPC
-    div ecx
-
-    push edx
-
-    mov eax, HPC
-    mov ecx, SPT
-    mul ecx
-
-    mov ecx, eax
-    mov eax, ebx
-    mov edx, 0
-    div ecx
-    push eax
-
-    pop eax
-    mov ch, al ; Cylinder
-    pop eax
-    mov dh, al ; Head
-    pop eax
-    mov cl, al ; Sector
-    pop eax
-    mov dl, al ; Drive
-
-    pop ebx
-    pop eax
-
-    mov ah, 0x02 ; Read sectors
-
+    mov ch, 0x00 ; cylinder (0x0 .. 0x3FF, upper two bits in 'cl'
+    ; dl <- drive number. Our caller sets it as a parameter and gets it from BIOS
+    ; (0 = floppy, 1 = floppy2, 0x80 = hdd, 0x81 = hdd2))
+    mov dh, 0x00 ; head number (0x0 .. 0xF)
+    ; [es:bx] <- pointer to buffer where the data will be stored
+    ; caller sets it up for us, and it is actually the standard location for int 13h
     int 0x13
+    ;call switch_to_32bit
+    ;[bits 32]
+
     jc disk_error
 
     pop dx
-    cmp dl, al ; Check if the number of read sectors is equal to the number of sectors to read
-    jne disk_warn
+    cmp al, dh ; Check if the number of sectors read is equal to the number of requested
+    jne sectors_error
 
-disk_load_done:
+    ; If no errors, print '1'
+    mov ah, 0x0E
+    mov al, '1'
+    int 0x10
+
     popa
     ret
 
 disk_error:
-    call error_loop
-    jmp disk_load_done
+    mov bx, DISK_ERROR
+    call print
+    call print_nl
+    mov dh, ah ; ah = error code, dl = disk drive that dropped the error
+    call print_hex
+    jmp disk_loop
 
-disk_warn:
-    call error_loop
-    jmp disk_load_done
+sectors_error:
+    mov bx, SECTORS_ERROR
+    call print
 
-error_loop:
-    mov dh, ah
-    mov ah, 0x0E
-    mov al, 'E'
+disk_loop:
+    jmp $
+
+print:
+    pusha
+
+print_nl:
+    pusha
+
+    mov ah, 0x0e
+    mov al, 0x0a ; newline char
     int 0x10
-    mov al, 'r'
+    mov al, 0x0d ; carriage return
     int 0x10
-    int 0x10
-    mov al, 0x20 ; Space
-    int 0x10
-    mov al, dh ; Print Error Code
-    int 0x10
+
+    popa
+    ret
+
+print_hex:
+    pusha
+
+    mov cx, 0 ; counter
+
+DISK_ERROR db "Disk read error", 0
+SECTORS_ERROR db "Incorrect numbers of sectors read", 0
