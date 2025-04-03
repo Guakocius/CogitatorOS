@@ -25,7 +25,7 @@ disk_load:
 
     ; If no errors, print '1'
     mov ah, 0x0E
-    mov al, '1'
+    mov al, '0'
     int 0x10
 
     popa
