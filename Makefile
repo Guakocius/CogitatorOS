@@ -20,13 +20,13 @@ install_deps:
 		fi; \
 	else \
 		if ! dpkg -s libncurses5-dev >/dev/null 2>&1; then \
-			sudo apt update && sudo apt upgrade -y libncurses5-dev; \
+			sudo apt update && sudo apt install libncurses5-dev && sudo apt upgrade -y libncurses5-dev; \
 		fi; \
 		if ! dpkg -s gcc-multilib >/dev/null 2>&1; then \
-			sudo apt update && sudo apt upgrade -y gcc-multilib; \
+			sudo apt update && sudo apt install gcc-multilib && sudo apt upgrade -y gcc-multilib; \
 		fi; \
 		if ! dpkg -s libc6-dev-i386 >/dev/null 2>&1; then \
-			sudo apt update && sudo apt upgrade -y libc6-dev-i386; \
+			sudo apt update && sudo apt install libc6-dev-i386 sudo apt upgrade -y libc6-dev-i386; \
 		fi; \
 	fi
 
@@ -55,8 +55,11 @@ install_deps:
 	cat $^ > $@
 
 ./boot/img/CogitatorOS.img: ./bin/CogitatorOS.bin
+	dd if=/dev/zero of=./boot/img/CogitatorOS.img bs=512 count=2880
+	mkfs.fat -F 12 -n "NBOS" ./boot/img/CogitatorOS.img
+	dd if=./bin/mbr.bin of=./boot/img/CogitatorOS.img conv=notrunc
 	mkdir -p ./boot/img
-	cp $< $@
+	mcopy -i ./boot/img/CogitatorOS.img ./bin/mbr.bin ::/bootloader.mbr
 
 run: ./boot/img/CogitatorOS.img
 	qemu-system-i386 -drive format=raw,file=$<
