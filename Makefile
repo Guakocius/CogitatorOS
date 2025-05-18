@@ -30,7 +30,7 @@ install_deps:
 		fi; \
 	fi
 
-./bin/kernel.bin: ./boot/bootloader/kernel-entry.o ./boot/drivers/ports.o ./boot/drivers/display.o ./boot/bootloader/kernel/util.o ./boot/bootloader/kernel/kernel.o
+./bin/kernel.bin: ./boot/bootloader/kernel/kernel.o ./boot/bootloader/kernel-entry.o ./boot/drivers/ports.o ./boot/drivers/display.o ./boot/bootloader/kernel/util.o
 	ld -m elf_i386 -T linker.ld -o $@ --oformat binary $^
 
 ./boot/bootloader/kernel-entry.o: ./boot/bootloader/kernel-entry.asm
@@ -54,18 +54,22 @@ install_deps:
 ./bin/CogitatorOS.bin: ./bin/mbr.bin ./bin/kernel.bin
 	cat $^ > $@
 
-./boot/img/CogitatorOS.img: ./bin/CogitatorOS.bin
+./boot/img/CogitatorOS.img: ./bin/mbr.bin ./bin/kernel.bin
 	dd if=/dev/zero of=./boot/img/CogitatorOS.img bs=512 count=2880
 	mkfs.fat -F 12 -n "NBOS" ./boot/img/CogitatorOS.img
-	dd if=./bin/mbr.bin of=./boot/img/CogitatorOS.img conv=notrunc
-	mkdir -p ./boot/img
-	mcopy -i ./boot/img/CogitatorOS.img ./bin/mbr.bin ::/bootloader.mbr
+	dd if=./bin/mbr.bin of=./boot/img/CogitatorOS.img conv=notrunc bs=512 count=1
+#	dd if=./bin/kernel.bin of=./boot/img/CogitatorOS.img conv=notrunc bs=512 seek=1
+#	mkdir -p ./boot/img
+	mcopy -i ./boot/img/CogitatorOS.img ./bin/kernel.bin ::/KERNEL.BIN
 
 run: ./boot/img/CogitatorOS.img
-	qemu-system-i386 -drive format=raw,file=$<
+	qemu-system-i386 -drive format=raw,file=./boot/img/CogitatorOS.img
 
 %.o: %.c
 	$(CC) -fPIE -c -o $@ $< $(CFLAGS)
+
+rm:
+	rm -f run
 
 clean:
 	rm -f ./bin/*.bin ./boot/bootloader/*.o ./boot/bootloader/kernel/*.o ./boot/drivers/*.o $(IMG)

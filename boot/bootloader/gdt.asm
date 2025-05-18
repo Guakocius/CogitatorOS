@@ -2,6 +2,8 @@
 CODE_SEG equ gdt_code - gdt_start
 DATA_SEG equ gdt_data - gdt_start
 
+jmp CODE_SEG:init_32_bit
+
 gdt_start:
     dq 0x0
 
