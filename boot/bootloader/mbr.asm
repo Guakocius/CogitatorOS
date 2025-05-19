@@ -38,30 +38,29 @@ start:
     mov ah, 0x0E
     mov al, 'B'
     int 0x10
+    xor ax, ax
 
     ; Set up data segments
     mov ax, 0
     mov ds, ax
     mov es, ax
-    
+
     ; Setup stack
-    ;mov bp, 0x9000
-    ;mov sp, bp
     mov ss, ax
     mov sp, 0x7C00
 
-    
+
     ; read something from floppy disk
     ; BIOS should set DL to drive number
     mov [ebr_drive_number], dl
 
     mov ax, 1                                           ; LBA=1, second sector from disk
     mov cl, 1                                           ; 1 sector to read
-    mov bx, 0x7E00                                      ; data should be after the bootloader                     
+    mov bx, 0x7E00                                      ; data should be after the bootloader
     call disk_read
 
     ;jmp KERNEL_OFFSET
-    call BEGIN_32_BIT
+    ;call BEGIN_32_BIT
 
     mov ah, 0x0E
     mov al, 0x48 ; 'H'
@@ -81,10 +80,13 @@ start:
     ; Error handlers
     ;
     floppy_error:
+        mov ah, 0x0E
+        mov al, 'T'
+        int 0x10
         mov si, MSG_READ_FAILED
         call puts
         jmp wait_key_and_reboot
-        
+
     wait_key_and_reboot:
         mov ah, 0
         int 0x16                                    ; wait for keypress
@@ -97,13 +99,10 @@ start:
 
 
     load_kernel:
-        mov al, 0x57 ; 'W'
-        int 0x10
 
         mov bx, 0x7E00 ; bx -> destination
         mov dh, 0x05 ; dh -> number of sectors to read
         mov dl, [ebr_drive_number] ; dl -> disk
-
 
         ;
         ; Disk routines
@@ -121,26 +120,30 @@ start:
 
             push ax
             push dx
+            mov ah, 0x0E
+            mov al, 'C'
+            int 0x10
 
             xor dx, dx                          ; dx = 0
             div word [bdb_sectors_per_track]    ; ax = LBA / SectorsPerTrack
                                                 ; dx = LBA % SectorsPerTrack
-            
+
             inc dx                              ; dx = (LBA % SectorsPerTrack + 1) = sector
             mov cx, dx                          ; cx = sector
 
             xor dx, dx
             div word [bdb_heads]                ; ax = (LBA / SectorsPerTrack) / Heads = cylinder
                                                 ; dx = (LBA / SectorsPerTrack) % Heads = head
-            
-            mov dh, dl                  ; dh = head
+            mov dh, dl                          ; dh = head
             mov ch, al                          ; ch = cylinder (lower 8 bits)
-            shl ah, 6                           
+            shl ah, 6
             or cl, ah                           ; put upper 2 bits of cylinder in CL
 
             pop ax
+            pop dx
             mov dl, al                          ; restore DL
-            pop ax
+            ;pop ax
+
             ret
 
 
@@ -153,6 +156,7 @@ start:
 ;   - es:bx memory address where to store read data
 ;
 disk_read:
+
     push ax                                         ; save registers to modify
     push bx
     push dx
@@ -160,6 +164,7 @@ disk_read:
 
     push cx                                         ; temporarily save CL (number of sectors to read)
     call lba_to_chs                                 ; compute CHS
+    ; Goes to here perfectly
     pop ax                                          ; AL = number of sectors to read
 
     mov ah, 0x02
@@ -181,9 +186,15 @@ disk_read:
 
 .fail:
     ; after all attempts are exhausted
+    mov ah, 0x0E
+    mov al, 'T'
+    int 0x10
     jmp floppy_error
 
 .done:
+    mov ah, 0x0E
+    mov al, 'R'
+    int 0x10
     popa
 
     push di                                         ; restore registers modified
@@ -213,11 +224,12 @@ BEGIN_32_BIT:
     int 0x10
     ;jmp KERNEL_OFFSET ; Call the kernel
     jmp 0x7E00 ; Call the kernel
-    
+
 newline db 0x0A
 ;BOOT_DRIVE db 0
 ;KERNEL_OFFSET equ 0x1000
-MSG_READ_FAILED: db 'Read from disk failed!', newline, 0
+MSG_READ_SUCCESS: db "Reading from disk: Success", 0
+MSG_READ_FAILED: db 'Read from disk failed!', 0
 
 times 510-($-$$) db 0 ; Pad the rest of the sector with zeros to make it 512 bytes
 dw 0xAA55 ; Boot signature, magic number
