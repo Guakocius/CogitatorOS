@@ -1,6 +1,13 @@
 [bits 16]
 [org 0x7C00] ; BIOS loads the boot sector into memory location 0x7c00
 
+
+;   %include "./boot/bootloader/disk.asm"
+;    %include "./boot/bootloader/gdt.asm"
+;    %include "./boot/bootloader/32-bit-switch.asm"
+
+    %define ENDL 0x0D, 0x0A
+
 ;
 ; FAT12 Header
 ;
@@ -33,56 +40,72 @@ ebr_system_id:                db 'FAT12   '         ; 8 bytes
 ; Code goes here
 ;
 
+
+
 start:
+    jmp main
 
-    mov ah, 0x0E
-    mov al, 'B'
-    int 0x10
-    xor ax, ax
-
-    ; Set up data segments
-    mov ax, 0
-    mov ds, ax
-    mov es, ax
-
-    ; Setup stack
-    mov ss, ax
-    mov sp, 0x7C00
-
-
-    ; read something from floppy disk
-    ; BIOS should set DL to drive number
-    mov [ebr_drive_number], dl
-
-    mov ax, 1                                           ; LBA=1, second sector from disk
-    mov cl, 1                                           ; 1 sector to read
-    mov bx, 0x7E00                                      ; data should be after the bootloader
-    call disk_read
-
-    ;jmp KERNEL_OFFSET
-    ;call BEGIN_32_BIT
-
-    mov ah, 0x0E
-    mov al, 0x48 ; 'H'
-    mov bh, 0x00
-    int 0x10
-
-;    %include "./boot/bootloader/disk.asm"
-    %include "./boot/bootloader/gdt.asm"
-    %include "./boot/bootloader/32-bit-switch.asm"
-
+    ;
+    ; Prints a string to the screen
+    ; Params:
+    ;   - ds:si points to string
     puts:
         push si
         push ax
         push bx
 
+    .loop:
+        lodsb
+        or al, al
+        jz .done
+
+        mov ah, 0x0E
+        mov bh, 0
+        int 0x10
+
+        jmp .loop
+
+    .done:
+        pop bx
+        pop ax
+        pop si
+        ret
+
+    main:
+        ;mov ah, 0x0E
+        ;mov al, 'B'
+        ;int 0x10
+        ;xor ax, ax
+
+        ; Set up data segments
+        mov ax, 0
+        mov ds, ax
+        mov es, ax
+
+        ; Setup stack
+        mov ss, ax
+        mov sp, 0x7C00
+
+
+        ; read something from floppy disk
+        ; BIOS should set DL to drive number
+        mov [ebr_drive_number], dl
+
+        mov ax, 1                                           ; LBA=1, second sector from disk
+        mov cl, 1                                           ; 1 sector to read
+        mov bx, 0x7E00                                      ; data should be after the bootloader
+        call disk_read
+
+        mov si, MSG_READ_SUCCESS
+        call puts
+
+        cli
+        hlt
+
     ;
     ; Error handlers
     ;
     floppy_error:
-        mov ah, 0x0E
-        mov al, 'T'
-        int 0x10
         mov si, MSG_READ_FAILED
         call puts
         jmp wait_key_and_reboot
@@ -90,19 +113,12 @@ start:
     wait_key_and_reboot:
         mov ah, 0
         int 0x16                                    ; wait for keypress
-        jmp 0x0FFFF:0                               ; jump to beginning of BIOS, should reboot
+        jmp 0xFFFF:0                               ; jump to beginning of BIOS, should reboot
 
 
     .halt:
         cli                                         ; Disable interrupts, CPU can't get out of the HALT state
         hlt
-
-
-    load_kernel:
-
-        mov bx, 0x7E00 ; bx -> destination
-        mov dh, 0x05 ; dh -> number of sectors to read
-        mov dl, [ebr_drive_number] ; dl -> disk
 
         ;
         ; Disk routines
@@ -120,9 +136,10 @@ start:
 
             push ax
             push dx
-            mov ah, 0x0E
-            mov al, 'C'
-            int 0x10
+
+            ;mov ah, 0x0E
+            ;mov al, 'C'
+            ;int 0x10
 
             xor dx, dx                          ; dx = 0
             div word [bdb_sectors_per_track]    ; ax = LBA / SectorsPerTrack
@@ -140,10 +157,9 @@ start:
             or cl, ah                           ; put upper 2 bits of cylinder in CL
 
             pop ax
-            pop dx
+            ;pop dx
             mov dl, al                          ; restore DL
-            ;pop ax
-
+            pop ax
             ret
 
 
@@ -159,6 +175,7 @@ disk_read:
 
     push ax                                         ; save registers to modify
     push bx
+    push cx
     push dx
     push di
 
@@ -186,22 +203,16 @@ disk_read:
 
 .fail:
     ; after all attempts are exhausted
-    mov ah, 0x0E
-    mov al, 'T'
-    int 0x10
     jmp floppy_error
 
 .done:
-    mov ah, 0x0E
-    mov al, 'R'
-    int 0x10
     popa
 
-    push di                                         ; restore registers modified
-    push dx
-    push cx
-    push bx
-    push ax
+    pop di                                         ; restore registers modified
+    pop dx
+    pop cx
+    pop bx
+    pop ax
     ret
 
 ;
@@ -217,19 +228,17 @@ disk_reset:
     popa
     ret
 
-[bits 32]
-BEGIN_32_BIT:
-    mov ah, 0x0E
-    mov al, '!'
-    int 0x10
-    ;jmp KERNEL_OFFSET ; Call the kernel
-    jmp 0x7E00 ; Call the kernel
+;[bits 32]
+;BEGIN_32_BIT:
+ ;   mov ah, 0x0E
+ ;   mov al, '!'
+ ;   int 0x10
+ ;   ;jmp KERNEL_OFFSET ; Call the kernel
+ ;   jmp 0x7E00 ; Call the kernel
 
-newline db 0x0A
-;BOOT_DRIVE db 0
-;KERNEL_OFFSET equ 0x1000
-MSG_READ_SUCCESS: db "Reading from disk: Success", 0
-MSG_READ_FAILED: db 'Read from disk failed!', 0
+
+MSG_READ_SUCCESS: db "Reading from disk: Success", ENDL, 0
+MSG_READ_FAILED: db 'Read from disk failed!', ENDL, 0
 
 times 510-($-$$) db 0 ; Pad the rest of the sector with zeros to make it 512 bytes
 dw 0xAA55 ; Boot signature, magic number
