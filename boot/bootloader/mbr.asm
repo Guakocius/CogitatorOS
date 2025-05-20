@@ -1,10 +1,9 @@
 [bits 16]
 [org 0x7C00] ; BIOS loads the boot sector into memory location 0x7c00
 
-
-;   %include "./boot/bootloader/disk.asm"
+    %include "./boot/bootloader/32-bit-switch.asm"
+    %include "./boot/bootloader/kernel-entry.asm"
 ;    %include "./boot/bootloader/gdt.asm"
-;    %include "./boot/bootloader/32-bit-switch.asm"
 
     %define ENDL 0x0D, 0x0A
 
@@ -72,10 +71,6 @@ start:
         ret
 
     main:
-        ;mov ah, 0x0E
-        ;mov al, 'B'
-        ;int 0x10
-        ;xor ax, ax
 
         ; Set up data segments
         mov ax, 0
@@ -98,6 +93,8 @@ start:
 
         mov si, MSG_READ_SUCCESS
         call puts
+        call switch_to_32bit
+        call kernel_entry
 
         cli
         hlt
@@ -136,10 +133,6 @@ start:
 
             push ax
             push dx
-
-            ;mov ah, 0x0E
-            ;mov al, 'C'
-            ;int 0x10
 
             xor dx, dx                          ; dx = 0
             div word [bdb_sectors_per_track]    ; ax = LBA / SectorsPerTrack
@@ -227,15 +220,6 @@ disk_reset:
     jc floppy_error
     popa
     ret
-
-;[bits 32]
-;BEGIN_32_BIT:
- ;   mov ah, 0x0E
- ;   mov al, '!'
- ;   int 0x10
- ;   ;jmp KERNEL_OFFSET ; Call the kernel
- ;   jmp 0x7E00 ; Call the kernel
-
 
 MSG_READ_SUCCESS: db "Reading from disk: Success", ENDL, 0
 MSG_READ_FAILED: db 'Read from disk failed!', ENDL, 0
