@@ -1,10 +1,9 @@
 [bits 16]
 
 
-global init_32_bit
+;global init_32_bit
 global switch_to_32bit
 
-%include "./boot/bootloader/kernel-entry.asm"
 %include "./boot/bootloader/gdt.asm"
 
 
@@ -35,4 +34,4 @@ init_32_bit:
     mov ebp, 0x9000
     mov esp, ebp
 
-    call kernel_entry
+    ret

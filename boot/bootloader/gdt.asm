@@ -1,12 +1,9 @@
 ;;; gdt_start and gdt_end labels are used to compute size
-global CODE_SEG
-global DATA_SEG
 CODE_SEG equ gdt_code - gdt_start
 DATA_SEG equ gdt_data - gdt_start
-global gdt_descriptor
 
-extern init_32_bit
-jmp CODE_SEG:init_32_bit
+;extern init_32_bit
+;jmp CODE_SEG:init_32_bit
 
 gdt_start:
     dq 0x0

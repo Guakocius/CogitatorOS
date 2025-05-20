@@ -89,8 +89,8 @@ start:
 
         mov si, MSG_READ_SUCCESS
         call puts
-        jmp switch_to_32bit
-        jmp 0x7E00
+        call switch_to_32bit
+        ;jmp 0x0000:0x7E00
 
     ;
     ; Error handlers

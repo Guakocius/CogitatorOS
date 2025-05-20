@@ -39,8 +39,8 @@ install_deps:
 ./boot/drivers/display.o \
 ./src/printf.o \
 ./boot/bootloader/gdt.o \
-./boot/bootloader/kernel-entry.o \
 ./boot/bootloader/32-bit-switch.o \
+./boot/bootloader/kernel-entry.o \
 ./kernel/arch/x86/kernel.o
 
 	ld -m elf_i386 -T linker.ld -o $@ --oformat binary $^
