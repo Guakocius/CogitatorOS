@@ -1,5 +1,4 @@
-#include "console.h"
-#include <stdio.h>
+#include "include/os_stdio.h"
 
 void console_print(const char *str) {
     printf("%s", str);

@@ -1,6 +1,4 @@
-#include "status.h"
-#include "status_check.h"
-#include "display.h"
+#include "include/os_stdio.h"
 
 
 Status statuses[] = {

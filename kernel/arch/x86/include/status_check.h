@@ -1,7 +1,7 @@
 #ifndef STATUS_CHECK_H
 #define STATUS_CHECK_H
 
-#include <stdbool.h>
+#include "../../../../src/include/os_stdio.h"
 
 int check_hardware();
 int check_network();

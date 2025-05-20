@@ -1,6 +1,6 @@
 [bits 32]
-%include "kernel/arch/x86/kernel.c"
-[extern main]
+extern _main
+global kernel_entry
 kernel_entry:
-    call main
-jmp $
+    call _main
+    jmp $

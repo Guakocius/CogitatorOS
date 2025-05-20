@@ -1,9 +1,6 @@
-#include "include/display.h"
-#include "include/util.h"
+#include "../../../src/include/os_stdio.h"
 
-#include <stdio.h>
-
-int main() {
+int _main() {
     /*clear_screen();
     char* line;
     for (int i = 1; i <= 35; i++) {

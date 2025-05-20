@@ -1,11 +1,9 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include "ps1.h"
+#include "include/os_stdio.h"
 
 // Function to set the custom PS1 prompt
 void set_ps1(const char *ps1) {
-    setenv("PS1", ps1, 1);
+//    setenv("PS1", ps1, 1);
 }
 
 char *read_ps1_from_config(const char *config_file) {

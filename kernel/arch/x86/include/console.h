@@ -1,6 +1,5 @@
 #ifndef CONSOLE_H
 #define CONSOLE_H
-#include <ncurses.h>
 
 void console_init();
 void console_print(const char *str);

@@ -1,6 +1,4 @@
-#include "ports.h"
-#include "display.h"
-#include "util.h"
+#include "../../src/include/os_stdio.h"
 
 void set_cursor(int offset) {
     offset /= 2;

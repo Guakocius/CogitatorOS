@@ -1,5 +1,4 @@
-#include "input.h"
-#include "display.h"
+#include "include/os_stdio.h"
 
 #include <ncurses.h>
 #include <string.h>

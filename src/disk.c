@@ -1,5 +1,4 @@
-#include "disk.h"
-#include <stdio.h>
+#include "include/os_stdio.h"
 
 #define SECTOR_SIZE 512
 

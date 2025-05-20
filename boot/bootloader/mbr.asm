@@ -1,11 +1,7 @@
 [bits 16]
 [org 0x7C00] ; BIOS loads the boot sector into memory location 0x7c00
 
-    %include "./boot/bootloader/32-bit-switch.asm"
-    %include "./boot/bootloader/kernel-entry.asm"
-;    %include "./boot/bootloader/gdt.asm"
-
-    %define ENDL 0x0D, 0x0A
+%define ENDL 0x0D, 0x0A
 
 ;
 ; FAT12 Header
@@ -93,11 +89,8 @@ start:
 
         mov si, MSG_READ_SUCCESS
         call puts
-        call switch_to_32bit
-        call kernel_entry
-
-        cli
-        hlt
+        jmp switch_to_32bit
+        jmp 0x7E00
 
     ;
     ; Error handlers
@@ -223,7 +216,7 @@ disk_reset:
 
 MSG_READ_SUCCESS: db "Reading from disk: Success", ENDL, 0
 MSG_READ_FAILED: db 'Read from disk failed!', ENDL, 0
-
+%include "boot/bootloader/32-bit-switch.asm"
 times 510-($-$$) db 0 ; Pad the rest of the sector with zeros to make it 512 bytes
 dw 0xAA55 ; Boot signature, magic number
 

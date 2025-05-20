@@ -1,4 +1,20 @@
 [bits 16]
+
+
+global init_32_bit
+global switch_to_32bit
+
+%include "./boot/bootloader/kernel-entry.asm"
+%include "./boot/bootloader/gdt.asm"
+
+
+;extern DATA_SEG
+;extern CODE_SEG
+;extern gdt_descriptor
+;extern kernel_entry
+
+
+
 switch_to_32bit:
     cli
     lgdt [gdt_descriptor] ; Load GDT Descriptor
@@ -6,8 +22,6 @@ switch_to_32bit:
     or eax, 0x1 ; enable protected mode
     mov cr0, eax
     jmp CODE_SEG:init_32_bit
-
-    jmp $
 
 [bits 32]
 init_32_bit:
@@ -21,4 +35,4 @@ init_32_bit:
     mov ebp, 0x9000
     mov esp, ebp
 
-    call BEGIN_32_BIT ; move back to mbr.asm
+    call kernel_entry

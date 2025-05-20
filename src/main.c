@@ -1,14 +1,6 @@
-#include "ps1.h"
-#include "display.h"
-#include "input.h"
-#include "status.h"
-#include "messages.h"
-#include "console.h"
-#include "disk.h"
-#include "state.h"
+#include "include/os_stdio.h"
 
 #include <ncurses.h>
-#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 

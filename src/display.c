@@ -1,4 +1,4 @@
-#include "display.h"
+#include "./include/os_stdio.h"
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
