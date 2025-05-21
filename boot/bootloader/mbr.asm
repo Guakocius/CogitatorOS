@@ -89,6 +89,8 @@ start:
 
         mov si, MSG_READ_SUCCESS
         call puts
+        cli
+        hlt
         call switch_to_32bit
         ;jmp 0x0000:0x7E00
 
