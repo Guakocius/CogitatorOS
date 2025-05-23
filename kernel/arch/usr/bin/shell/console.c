@@ -1,4 +1,4 @@
-#include "include/os_stdio.h"
+#include "../include/shell.h"
 
 void console_print(const char *str) {
     printf("%s", str);

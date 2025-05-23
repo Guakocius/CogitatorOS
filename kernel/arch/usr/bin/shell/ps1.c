@@ -1,5 +1,6 @@
 #include <string.h>
-#include "include/os_stdio.h"
+
+#include "../include/shell.h"
 
 // Function to set the custom PS1 prompt
 void set_ps1(const char *ps1) {

@@ -1,8 +1,6 @@
 #include "include/os_stdio.h"
-#include <unistd.h>
-#include <stdbool.h>
 
-int check_hardware() {
+/*int check_hardware() {
     sleep(1);
     return 0;
 }
@@ -20,4 +18,4 @@ int check_diagnostic() {
 int perform_checks(bool (*check_fn)()) {
     bool result = check_fn();
     return result ? 1 : 0;
-}
+}*/

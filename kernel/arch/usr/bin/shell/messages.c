@@ -1,4 +1,4 @@
-#include "include/os_stdio.h"
+#include "../include/shell.h"
 
 const char *welcome_msg = "COGITATOR AWAKES: PLEASE WAIT...";
 const char *online_msg = "COGITATOR ONLINE: MACHINE SPIRIT ACTIVE...";

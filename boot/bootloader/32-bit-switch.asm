@@ -5,12 +5,11 @@
 global switch_to_32bit
 
 %include "./boot/bootloader/gdt.asm"
-
+;%include "./boot/bootloader/kernel-entry.asm"
 
 ;extern DATA_SEG
 ;extern CODE_SEG
 ;extern gdt_descriptor
-;extern kernel_entry
 
 
 
@@ -31,7 +30,5 @@ init_32_bit:
     mov fs, ax
     mov gs, ax
 
-    mov ebp, 0x9000
+    mov ebp, 0x7E00
     mov esp, ebp
-
-    ret

@@ -1,4 +1,4 @@
-#include "include/os_stdio.h"
+#include "../include/shell.h"
 
 extern void set_video_mode();
 extern void draw_px(int x, int y, unsigned char color);

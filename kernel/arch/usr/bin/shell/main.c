@@ -1,4 +1,4 @@
-#include "include/os_stdio.h"
+#include "../include/shell.h"
 
 #include <ncurses.h>
 #include <string.h>

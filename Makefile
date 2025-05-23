@@ -1,8 +1,10 @@
 CC = gcc
 ASM = nasm
-CFLAGS = -ffreestanding -fno-pic -fno-stack-protector -mno-red-zone $(INCLUDE)
+CFLAGS = -Wall -Wextra -O2 -ffreestanding -fno-pic -fno-stack-protector -mno-red-zone -D__OS_FREESTANDING__
 IMG = ./boot/img/CogitatorOS.img
-CFILES = $(wildcard {./kernel/arch/x86/*.c,./src/*.c,./boot/drivers/*.c})
+CFILES = $(wildcard ./kernel/arch/x86/*.c) \
+		 $(wildcard ./src/*.c) \
+		 $(wildcard ./boot/drivers/*.c)
 OBJ = $(CFILES:.c=.o)
 INCLUDE = -I./src/include -I./kernel/arch/x86/include -I./boot/drivers/include
 
@@ -34,14 +36,10 @@ install_deps:
 	fi
 
 ./bin/kernel.bin: \
-./kernel/arch/x86/util.o \
-./boot/drivers/ports.o \
-./boot/drivers/display.o \
-./src/printf.o \
+$(OBJ) \
 ./boot/bootloader/gdt.o \
-./boot/bootloader/32-bit-switch.o \
 ./boot/bootloader/kernel-entry.o \
-./kernel/arch/x86/kernel.o
+./boot/bootloader/32-bit-switch.o
 
 	ld -m elf_i386 -T linker.ld -o $@ --oformat binary $^
 
@@ -61,7 +59,7 @@ install_deps:
 #	$(CC) -m32 -ffreestanding -c $< -o $@ $(CFLAGS)
 
 
-$(OBJ): %.o: %.c
+#$(OBJ): %.o: %.c
 #	$(CC) -m32 -ffreestanding -c $< -o $@ $(CFLAGS)
 #./boot/drivers/display.o: ./boot/drivers/display.c
 #	$(CC) -m32 -ffreestanding -c $< -o $@ $(CFLAGS)
@@ -87,7 +85,7 @@ run: ./boot/img/CogitatorOS.img
 	qemu-system-i386 -drive format=raw,file=./boot/img/CogitatorOS.img
 
 %.o: %.c
-	$(CC) -m32 $(CFLAGS) -c -o $@ $<
+	$(CC) -m32 $(CFLAGS) -c -o $@ $< $(INCLUDE)
 
 rm:
 	rm -f run

@@ -1,4 +1,4 @@
-#include "include/os_stdio.h"
+#include "./include/os_stdio.h"
 
 
 Status statuses[] = {
@@ -22,7 +22,7 @@ void init_status() {
     }
 }
 
-void display_status(WINDOW *win, Status *status) {
+/*void display_status(WINDOW *win, Status *status) {
     int width;
     int height;
     getmaxyx(win, height, width);
@@ -36,7 +36,7 @@ void display_status(WINDOW *win, Status *status) {
     char bin_status[40] = {0};
 
     // Display OK or FAIL
-    if (status->check_fn() == 0) {
+      if (status->check_fn() == 0) {
         wattron(win, COLOR_PAIR(1));
         display_binary(win, bin_status, "OK");
         mvwprintw(win, 1, 0, "%s", bin_status);
@@ -48,5 +48,4 @@ void display_status(WINDOW *win, Status *status) {
         wattroff(win, COLOR_PAIR(2));
     }
     wrefresh(win);
-}
-
+}*/
