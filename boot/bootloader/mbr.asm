@@ -50,6 +50,7 @@ start:
         push bx
 
     .loop:
+        stc
         lodsb
         or al, al
         jz .done
@@ -83,16 +84,15 @@ start:
         mov [ebr_drive_number], dl
 
         mov ax, 1                                           ; LBA=1, second sector from disk
-        mov cl, 1                                           ; 1 sector to read
+        mov cl, 1                                           ; number of sectors to read (currently 5)
         mov bx, 0x7E00                                      ; data should be after the bootloader
         call disk_read
 
         mov si, MSG_READ_SUCCESS
         call puts
-        cli
-        hlt
+
         call switch_to_32bit
-        ;jmp 0x0000:0x7E00
+        jmp 0x7E00
 
     ;
     ; Error handlers
