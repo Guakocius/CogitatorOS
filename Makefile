@@ -1,6 +1,6 @@
 CC = gcc
 ASM = nasm
-CFLAGS = -ffreestanding -fno-pic -mno-red-zone -I./boot/drivers/include -I./boot/bootloader/kernel/include
+CFLAGS = -ffreestanding -fno-pic -fno-pie -fno-stack-protector -mno-red-zone -I./boot/drivers/include -I./boot/bootloader/kernel/include
 IMG = ./boot/img/CogitatorOS.img
 
 all: install_deps run
@@ -34,7 +34,7 @@ install_deps:
 	ld -m elf_i386 -T linker.ld -o $@ --oformat binary $^
 
 ./boot/bootloader/kernel-entry.o: ./boot/bootloader/kernel-entry.asm
-	$(ASM) $< -f elf -o $@
+	$(ASM) $< -f elf32 -o $@
 
 ./boot/bootloader/kernel/kernel.o: ./boot/bootloader/kernel/kernel.c
 	$(CC) -m32 -ffreestanding -c $< -o $@ $(CFLAGS)

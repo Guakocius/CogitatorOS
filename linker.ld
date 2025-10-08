@@ -1,18 +1,16 @@
-OUTPUT_FORMAT(binary)
+OUTPUT_FORMAT(elf32-i386)
+OUTPUT_ARCH(i386)
 ENTRY(_start)
 SECTIONS
 {
-    . = 0x7C00;
-    .text : AT(0x7C00)
+    /* Load the 32-bit kernel at physical 0x1000 as the bootloader expects */
+    . = 0x1000;
+    .text ALIGN(4) :
     {
-        *(.text)
+        *(.multiboot)
+        *(.text*)
     }
-    .data : AT(0x1000)
-    {
-        *(.data)
-    }
-    .bss : AT(0x8000)
-    {
-        *(.bss)
-    }
+    .rodata ALIGN(4) : { *(.rodata*) }
+    .data ALIGN(4)   : { *(.data*) }
+    .bss  ALIGN(4)   : { *(.bss*) *(COMMON) }
 }

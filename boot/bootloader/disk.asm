@@ -3,68 +3,51 @@ disk_load:
     pusha
     push dx
 
-    mov ah, 0x02 ; Read Sectors
-    mov al, dh ; Number of Sectors to Read (0x02 .. 0x80)
-    mov cl, 0x02 ; sector (0x01 .. 0x11)
+    ; Debug: print 'D' before disk read
+    mov ah, 0x0E
+    mov al, 'D'
+    int 0x10
 
-    mov ch, 0x00 ; cylinder (0x0 .. 0x3FF, upper two bits in 'cl'
-    ; dl <- drive number. Our caller sets it as a parameter and gets it from BIOS
-    ; (0 = floppy, 1 = floppy2, 0x80 = hdd, 0x81 = hdd2))
-    mov dh, 0x00 ; head number (0x0 .. 0xF)
-    ; [es:bx] <- pointer to buffer where the data will be stored
-    ; caller sets it up for us, and it is actually the standard location for int 13h
+    mov ah, 0x02            ; Read Sectors
+    mov al, dh              ; Number of sectors to read provided by caller in DH
+    mov [SECTORS_TO_READ], al
+    mov cl, 0x02            ; Start at sector 2
+    mov ch, 0x00            ; Cylinder 0
+    mov dh, 0x00            ; Head 0
+    ; [es:bx] destination set by caller
     int 0x13
-    ;call switch_to_32bit
-    ;[bits 32]
 
     jc disk_error
 
-    pop dx
-    cmp al, dh ; Check if the number of sectors read is equal to the number of requested
+    ; Verify we read the requested number of sectors
+    cmp al, [SECTORS_TO_READ]
     jne sectors_error
 
-    ; If no errors, print '1'
+    pop dx
+
+    ; Optional: print '.' on success
     mov ah, 0x0E
-    mov al, '0'
+    mov al, '.'
     int 0x10
 
     popa
     ret
 
 disk_error:
-    mov bx, DISK_ERROR
-    call print
-    call print_nl
-    mov dh, ah ; ah = error code, dl = disk drive that dropped the error
-    call print_hex
+    ; Print 'E' for disk error
+    mov ah, 0x0E
+    mov al, 'E'
+    int 0x10
     jmp disk_loop
 
 sectors_error:
-    mov bx, SECTORS_ERROR
-    call print
+    ; Print 'S' for sector mismatch error
+    mov ah, 0x0E
+    mov al, 'S'
+    int 0x10
+    jmp disk_loop
 
 disk_loop:
     jmp $
 
-print:
-    pusha
-
-print_nl:
-    pusha
-
-    mov ah, 0x0e
-    mov al, 0x0a ; newline char
-    int 0x10
-    mov al, 0x0d ; carriage return
-    int 0x10
-
-    popa
-    ret
-
-print_hex:
-    pusha
-
-    mov cx, 0 ; counter
-
-DISK_ERROR db "Disk read error", 0
-SECTORS_ERROR db "Incorrect numbers of sectors read", 0
+SECTORS_TO_READ db 0

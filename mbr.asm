@@ -1,5 +1,7 @@
 [bits 16]
-[org 0x7C00] ; BIOS loads the boot sector into memory location 0x7C00
+[org 0x7C00] ; BIOS loads t    ; Read the kernel from disk - padded to 6 sectors by Makefile
+    mov dh, 0x06 ; dh -> number of sectors to read (6 sectors = 3 KiB)
+    mov dl, [BOOT_DRIVE] ; dl -> diskoot sector into memory location 0x7C00
 
 KERNEL_OFFSET equ 0x1000 ; Physical load address of the 32-bit kernel
 
@@ -36,9 +38,9 @@ load_kernel:
     mov es, ax
     mov bx, KERNEL_OFFSET ; bx -> destination
 
-    ; Read enough sectors to load the kernel (kernel.bin is ~2KB = 4 sectors)
-    ; Add extra for safety
-    mov dh, 0x04 ; dh -> number of sectors to read (4 sectors = 2 KiB)
+    ; Read enough sectors to load the kernel (kernel.bin is ~2.3KB = 5 sectors)
+    ; Image total is ~5.5 sectors, so read 5 sectors (the kernel after MBR)
+    mov dh, 0x06 ; dh -> number of sectors to read (5 sectors = 2.5 KiB)
     mov dl, [BOOT_DRIVE] ; dl -> disk
 
     call disk_load

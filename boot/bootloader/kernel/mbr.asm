@@ -36,9 +36,9 @@ load_kernel:
     mov es, ax
     mov bx, KERNEL_OFFSET ; bx -> destination
 
-    ; Read enough sectors to load the kernel (kernel.bin is ~2KB = 4 sectors)
-    ; Add extra for safety
-    mov dh, 0x04 ; dh -> number of sectors to read (4 sectors = 2 KiB)
+    ; Read enough sectors to load the kernel (kernel.bin is ~2.6KB = 6 sectors)
+    ; Round up and add extra for safety
+    mov dh, 0x08 ; dh -> number of sectors to read (8 sectors = 4 KiB, plenty of room)
     mov dl, [BOOT_DRIVE] ; dl -> disk
 
     call disk_load
