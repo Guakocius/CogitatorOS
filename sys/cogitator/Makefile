@@ -1,8 +1,9 @@
-DEFAULT_HOST!=../default-host.sh
+DEFAULT_HOST!=../../default-host.sh
 HOST?=$(DEFAULT_HOST)
-HOSTARCH!=../target-triplet-to-arch.sh $(HOST)
+HOSTARCH!=../../target-triplet-to-arch.sh $(HOST)
 
-CFLAGS?=-O2 -g
+ASFLAGS?=
+CFLAGS?=-m32 -O2 -g
 CPPFLAGS?=
 LDFLAGS?=
 LIBS?=
@@ -13,12 +14,15 @@ EXEC_PREFIX?=$(PREFIX)
 BOOTDIR?=$(EXEC_PREFIX)/boot
 INCLUDEDIR?=$(PREFIX)/include
 
+ASFLAGS:=$(ASFLAGS) -m32
 CFLAGS:=$(CFLAGS) -ffreestanding -Wall -Wextra
 CPPFLAGS:=$(CPPFLAGS) -D__is_kernel -Iinclude
 LDFLAGS:=$(LDFLAGS)
 LIBS:=$(LIBS) -nostdlib -lk -lgcc
 
 ARCHDIR=arch/$(HOSTARCH)
+
+MMDIR=./mm
 
 include $(ARCHDIR)/make.config
 
@@ -37,15 +41,21 @@ $(ARCHDIR)/crtbegin.o \
 $(KERNEL_OBJS) \
 $(ARCHDIR)/crtend.o \
 $(ARCHDIR)/crtn.o \
+$(MMDIR)/paging.o \
+$(MMDIR)/paging_enable.o \
+
 
 LINK_LIST=\
 $(LDFLAGS) \
 $(ARCHDIR)/crti.o \
 $(ARCHDIR)/crtbegin.o \
 $(KERNEL_OBJS) \
+$(MMDIR)/paging.o \
+$(MMDIR)/paging_enable.o \
 $(LIBS) \
 $(ARCHDIR)/crtend.o \
 $(ARCHDIR)/crtn.o \
+
 
 .PHONY: all clean install install-headers install-kernel
 .SUFFIXES: .o .c .S
@@ -58,6 +68,9 @@ cogitator_os.kernel: $(OBJS) $(ARCHDIR)/linker.ld
 
 $(ARCHDIR)/crtbegin.o $(ARCHDIR)/crtend.o:
 	OBJ=`$(CC) $(CFLAGS) $(LDFLAGS) -print-file-name=$(@F)` && cp "$$OBJ" $@
+
+$(MMDIR)/paging_enable.o: $(MMDIR)/paging_enable.S
+	$(CC) $(CFLAGS) -c $< -o $@
 
 .c.o:
 	$(CC) -MD -c $< -o $@ -std=gnu11 $(CFLAGS) $(CPPFLAGS)

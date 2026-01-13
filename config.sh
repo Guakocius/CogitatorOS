@@ -1,5 +1,5 @@
-SYSTEM_HEADER_PROJECTS="libc cogitator"
-PROJECTS="libc cogitator"
+SYSTEM_HEADER_PROJECTS="libc sys/cogitator"
+PROJECTS="libc sys/cogitator"
 
 export MAKE=${MAKE:-make}
 export HOST=${HOST:-$(./default-host.sh)}

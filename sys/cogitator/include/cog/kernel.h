@@ -11,5 +11,6 @@ static uint16_t* const VGA_BUFFER = (uint16_t*)0xB8000;
 void print_ok(void);
 void print_err(void);
 
+extern uint32_t endkernel;
 
 #endif // !_KERNEL_H

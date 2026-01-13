@@ -1,6 +1,6 @@
 #include <string.h>
 #include <stddef.h>
-#include <stdint.h>
+//#include <stdint.h>
 #include <stdbool.h>
 
 #include <cog/kernel.h>
@@ -107,4 +107,20 @@ void print_err(void) {
   terminal_setcolor(old);
 }
 
+static inline uint32_t read_cr0(void) {
+  uint32_t val;
+  asm volatile("mov %%cr0, %0" : "=r"(val));
+  return val;
+}
+
+void check_paging(void) {
+  uint32_t cr0 = read_cr0();
+  if (cr0 & (1u << 31)) {
+    terminal_write("Paging: ");
+    print_ok();
+  } else {
+    terminal_write("Paging: ");
+    print_err();
+  }
+}
 
